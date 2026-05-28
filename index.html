@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GrantMatch — Archéologie & SHS</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1a1612;--paper:#f5f0e8;--cream:#ede7d6;--gold:#c9952a;--gold-l:#e8b84b;--rust:#a84632;--sage:#4a6741;--slate:#3d4f5c;--muted:#8a7e6e;--border:#d4c8b0;--sh:rgba(26,22,18,.1)}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 10%,rgba(201,149,42,.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 90%,rgba(74,103,65,.05) 0%,transparent 50%);pointer-events:none;z-index:0}
+.app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:0 20px 80px}
+
+/* LOADING */
+#loading{text-align:center;padding:80px 20px;color:var(--muted);font-family:'DM Mono',monospace;font-size:.85rem;letter-spacing:.08em}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 20px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* HEADER */
+header{text-align:center;padding:52px 0 36px;border-bottom:2px solid var(--border);margin-bottom:44px;position:relative}
+header::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:80px;height:3px;background:var(--gold)}
+.eyebrow{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+h1{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,5vw,3.2rem);font-weight:900;line-height:1.05;letter-spacing:-.02em}
+h1 em{font-style:italic;color:var(--gold)}
+.sub{margin-top:14px;font-size:.9rem;color:var(--muted);max-width:520px;margin-left:auto;margin-right:auto;line-height:1.65}
+.updated{margin-top:10px;font-family:'DM Mono',monospace;font-size:.62rem;color:var(--border);letter-spacing:.06em}
+
+/* PROGRESS */
+.progress-bar{height:3px;background:var(--border);border-radius:2px;margin-bottom:44px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-l));border-radius:2px;transition:width .4s ease}
+
+/* STEP */
+.step{display:none;animation:stepIn .32s ease both}
+.step.active{display:block}
+@keyframes stepIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.step-hd{display:flex;align-items:baseline;gap:14px;margin-bottom:26px}
+.step-n{font-family:'Playfair Display',serif;font-size:3.2rem;font-weight:900;color:var(--border);line-height:1;flex-shrink:0}
+.step-t{font-family:'Playfair Display',serif;font-size:1.38rem;font-weight:700;line-height:1.25;color:var(--ink)}
+.step-hint{font-size:.78rem;color:var(--muted);margin-top:4px;line-height:1.5}
+
+/* CHOICES */
+.choices{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:9px;margin-bottom:28px}
+.choices.c2{grid-template-columns:repeat(2,1fr)}.choices.c1{grid-template-columns:1fr}.choices.c3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:560px){.choices.c3,.choices.c2{grid-template-columns:1fr 1fr}}
+.choice{position:relative;cursor:pointer}
+.choice input{position:absolute;opacity:0;pointer-events:none}
+.cl{display:flex;flex-direction:column;gap:3px;padding:13px 16px;border:1.5px solid var(--border);border-radius:8px;background:white;cursor:pointer;transition:all .17s;box-shadow:0 1px 3px var(--sh)}
+.cl:hover{border-color:var(--gold);box-shadow:0 3px 10px rgba(201,149,42,.14);transform:translateY(-1px)}
+.choice input:checked+.cl{border-color:var(--gold);background:linear-gradient(135deg,#fffbf2,#fff8e8);box-shadow:0 0 0 2px rgba(201,149,42,.22),0 3px 10px rgba(201,149,42,.1)}
+.cm{font-size:.87rem;font-weight:600;color:var(--ink);line-height:1.3}
+.cs{font-size:.7rem;color:var(--muted);line-height:1.4}
+.choice input:checked+.cl .cm{color:var(--gold)}
+
+/* TAG GRID */
+.tag-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px}
+.tag-opt{cursor:pointer;padding:8px 16px;border:1.5px solid var(--border);border-radius:20px;font-size:.82rem;font-weight:500;background:white;transition:all .15s;user-select:none}
+.tag-opt:hover{border-color:var(--gold)}
+.tag-opt.sel{background:var(--ink);border-color:var(--ink);color:white}
+
+/* CHECK GROUP */
+.cg{display:flex;flex-direction:column;gap:7px;margin-bottom:28px}
+.ci{display:flex;align-items:flex-start;gap:11px;padding:11px 15px;border:1.5px solid var(--border);border-radius:8px;background:white;cursor:pointer;transition:all .14s}
+.ci:hover{border-color:var(--gold)}.ci.on{border-color:var(--gold);background:linear-gradient(135deg,#fffbf2,#fff8e8)}
+.cb{width:17px;height:17px;border:2px solid var(--border);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .14s;margin-top:1px}
+.ci.on .cb{background:var(--gold);border-color:var(--gold)}
+.cb::after{content:'✓';font-size:.68rem;color:white;display:none}.ci.on .cb::after{display:block}
+.ct{flex:1}.ctm{font-size:.86rem;font-weight:500;line-height:1.3}.cts{font-size:.7rem;color:var(--muted);margin-top:2px}
+
+/* BUTTONS */
+.btn-row{display:flex;gap:11px;align-items:center;flex-wrap:wrap}
+.btn{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.86rem;padding:11px 26px;border-radius:6px;border:none;cursor:pointer;transition:all .17s}
+.btn-p{background:var(--ink);color:var(--paper)}.btn-p:hover{background:var(--slate);transform:translateY(-1px);box-shadow:0 4px 12px rgba(26,22,18,.18)}
+.btn-g{background:var(--gold);color:white}.btn-g:hover{background:var(--gold-l);transform:translateY(-1px)}
+.btn-gh{background:transparent;color:var(--muted);border:1.5px solid var(--border)}.btn-gh:hover{border-color:var(--muted);color:var(--ink)}
+
+/* RESULTS */
+#results{display:none}
+.rh{text-align:center;padding:36px 0 28px;border-bottom:2px solid var(--border);margin-bottom:36px;position:relative}
+.rh::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:60px;height:3px;background:var(--sage)}
+.rt{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:700;color:var(--ink)}
+.rc{display:inline-block;margin-top:9px;font-family:'DM Mono',monospace;font-size:.72rem;color:var(--muted);letter-spacing:.09em}
+.ics-bar{display:flex;align-items:center;gap:12px;padding:16px 20px;background:linear-gradient(90deg,rgba(74,103,65,.06),transparent);border:1.5px solid rgba(74,103,65,.2);border-radius:10px;margin-bottom:28px;flex-wrap:wrap}
+.ics-bar p{font-size:.8rem;color:var(--slate);flex:1;line-height:1.5}
+.rf{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:24px}
+.rfb{font-family:'DM Mono',monospace;font-size:.63rem;letter-spacing:.06em;padding:5px 11px;border-radius:20px;border:1.5px solid var(--border);background:white;color:var(--muted);cursor:pointer;transition:all .14s}
+.rfb.active,.rfb:hover{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+
+/* GRANT CARD */
+.gc{background:white;border:1.5px solid var(--border);border-radius:12px;margin-bottom:14px;overflow:hidden;box-shadow:0 2px 8px var(--sh);transition:transform .2s,box-shadow .2s}
+.gc:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(26,22,18,.09)}
+.gc.p1{border-left:4px solid var(--gold)}.gc.p2{border-left:4px solid var(--sage)}.gc.p3{border-left:4px solid var(--slate)}
+.gt{padding:18px 22px 14px;display:flex;gap:14px;align-items:flex-start}
+.gfl{font-size:1.55rem;flex-shrink:0;line-height:1;margin-top:2px}
+.gm{flex:1;min-width:0}
+.gbs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:7px}
+.bdg{font-family:'DM Mono',monospace;font-size:.56rem;letter-spacing:.07em;text-transform:uppercase;padding:2px 7px;border-radius:3px;font-weight:500}
+.bu{background:rgba(168,70,50,.1);color:var(--rust);border:1px solid rgba(168,70,50,.22)}
+.bo{background:rgba(74,103,65,.1);color:var(--sage);border:1px solid rgba(74,103,65,.22)}
+.bup{background:rgba(201,149,42,.1);color:var(--gold);border:1px solid rgba(201,149,42,.22)}
+.bsl{background:rgba(61,79,92,.1);color:var(--slate);border:1px solid rgba(61,79,92,.18)}
+.gn{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:var(--ink);line-height:1.3;margin-bottom:3px}
+.gn a{color:inherit;text-decoration:none;border-bottom:1px dotted var(--gold)}
+.gn a:hover{color:var(--gold)}
+.go{font-size:.7rem;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.03em}
+.ga{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--gold);margin-top:9px}
+.gdr{display:flex;align-items:center;gap:9px;margin-top:7px;flex-wrap:wrap}
+.gdl{font-size:.68rem;color:var(--muted)}.gdv{font-family:'DM Mono',monospace;font-size:.72rem;font-weight:500;color:var(--ink)}
+.cp{font-family:'DM Mono',monospace;font-size:.66rem;padding:3px 8px;border-radius:4px;font-weight:500}
+.cpu{background:rgba(168,70,50,.1);color:var(--rust)}.cpo{background:rgba(74,103,65,.1);color:var(--sage)}.cpup{background:rgba(201,149,42,.1);color:var(--gold)}
+.warn-box{margin-top:8px;padding:6px 10px;background:rgba(168,70,50,.06);border:1px solid rgba(168,70,50,.2);border-radius:5px;font-size:.68rem;color:var(--rust);line-height:1.5}
+.gtog{display:flex;align-items:center;gap:7px;padding:9px 22px;background:none;border:none;border-top:1px solid var(--border);width:100%;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.73rem;color:var(--muted);transition:color .14s,background .14s;text-align:left}
+.gtog:hover{color:var(--ink);background:rgba(0,0,0,.02)}
+.tarr{transition:transform .25s}.gtog.open .tarr{transform:rotate(180deg)}
+.gexp{overflow:hidden;max-height:0;transition:max-height .35s ease}
+.gexp.open{max-height:900px}
+.gin{padding:18px 22px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:560px){.gin{grid-template-columns:1fr}}
+.gst{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.11em;text-transform:uppercase;color:var(--gold);margin-bottom:9px}
+.gnote{font-size:.77rem;color:var(--ink);line-height:1.65}
+.dl{list-style:none}
+.dl li{font-size:.74rem;color:var(--slate);padding:4px 0 4px 14px;position:relative;line-height:1.45;border-bottom:1px dotted var(--border)}
+.dl li:last-child{border:none}.dl li::before{content:'—';position:absolute;left:0;color:var(--gold);font-weight:700}
+.no-res{text-align:center;padding:56px 20px;color:var(--muted)}
+.no-res .ico{font-size:2.8rem;margin-bottom:14px}
+.restart-bar{text-align:center;margin-top:44px;padding-top:28px;border-top:1px solid var(--border)}
+.restart-bar p{font-size:.78rem;color:var(--muted);margin-bottom:11px}
+.pchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px}
+.pch{font-family:'DM Mono',monospace;font-size:.6rem;padding:3px 9px;background:var(--cream);border:1px solid var(--border);border-radius:20px;color:var(--slate)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div id="loading"><div class="spinner"></div>Chargement des données…</div>
+
+<div id="main" style="display:none">
+
+<header>
+  <p class="eyebrow">Outil de recherche de financements</p>
+  <h1>Grant<em>Match</em></h1>
+  <p class="sub">Archéologie & Sciences Humaines — Trouvez les bourses adaptées à votre profil en 2 minutes.</p>
+  <p class="updated" id="updatedLine"></p>
+</header>
+
+<div class="progress-bar"><div class="progress-fill" id="pf" style="width:0%"></div></div>
+
+<div id="wizard">
+
+<div class="step active" id="s1">
+  <div class="step-hd"><span class="step-n">01</span><div><div class="step-t">Avez-vous soutenu votre thèse ?</div><div class="step-hint">Certains financements nécessitent un doctorat obtenu.</div></div></div>
+  <div class="choices c2">
+    <label class="choice"><input type="radio" name="q_phd" value="yes"><div class="cl"><span class="cm">✅ Oui, thèse soutenue</span><span class="cs">Je suis titulaire d'un doctorat</span></div></label>
+    <label class="choice"><input type="radio" name="q_phd" value="no"><div class="cl"><span class="cm">📚 Non, en cours</span><span class="cs">Je suis encore doctorant(e)</span></div></label>
+  </div>
+  <div class="btn-row"><button class="btn btn-p" onclick="nxt(1)">Continuer →</button></div>
+</div>
+
+<div class="step" id="s2">
+  <div class="step-hd"><span class="step-n">02</span><div><div class="step-t">Depuis combien de temps votre thèse est-elle soutenue ?</div><div class="step-hint">La plupart des bourses postdoctorales imposent une limite d'ancienneté.</div></div></div>
+  <div class="choices">
+    <label class="choice"><input type="radio" name="q_age" value="lt1"><div class="cl"><span class="cm">Moins d'1 an</span></div></label>
+    <label class="choice"><input type="radio" name="q_age" value="1to2"><div class="cl"><span class="cm">1 à 2 ans</span></div></label>
+    <label class="choice"><input type="radio" name="q_age" value="2to4"><div class="cl"><span class="cm">2 à 4 ans</span></div></label>
+    <label class="choice"><input type="radio" name="q_age" value="4to6"><div class="cl"><span class="cm">4 à 6 ans</span></div></label>
+    <label class="choice"><input type="radio" name="q_age" value="6to10"><div class="cl"><span class="cm">6 à 10 ans</span></div></label>
+    <label class="choice"><input type="radio" name="q_age" value="gt10"><div class="cl"><span class="cm">Plus de 10 ans</span></div></label>
+  </div>
+  <div class="btn-row"><button class="btn btn-gh" onclick="prv(2)">← Retour</button><button class="btn btn-p" onclick="nxt(2)">Continuer →</button></div>
+</div>
+
+<div class="step" id="s3">
+  <div class="step-hd"><span class="step-n">03</span><div><div class="step-t">Dans quel pays avez-vous soutenu votre thèse ?</div><div class="step-hint">Conditionne l'accès à certains programmes nationaux.</div></div></div>
+  <div class="choices c3">
+    <label class="choice"><input type="radio" name="q_cty" value="fr"><div class="cl"><span class="cm">🇫🇷 France</span></div></label>
+    <label class="choice"><input type="radio" name="q_cty" value="de"><div class="cl"><span class="cm">🇩🇪 Allemagne</span></div></label>
+    <label class="choice"><input type="radio" name="q_cty" value="uk"><div class="cl"><span class="cm">🇬🇧 Royaume-Uni</span></div></label>
+    <label class="choice"><input type="radio" name="q_cty" value="nl"><div class="cl"><span class="cm">🇳🇱 Pays-Bas</span></div></label>
+    <label class="choice"><input type="radio" name="q_cty" value="ch"><div class="cl"><span class="cm">🇨🇭 Suisse</span></div></label>
+    <label class="choice"><input type="radio" name="q_cty" value="at"><div class="cl"><span class="cm">🇦🇹 Autriche</span></div></label>
+    <label class="choice"><input type="radio" name="q_cty" value="other_eu"><div class="cl"><span class="cm">🇪🇺 Autre pays UE</span></div></label>
+    <label class="choice"><input type="radio" name="q_cty" value="non_eu"><div class="cl"><span class="cm">🌍 Hors Europe</span></div></label>
+  </div>
+  <div class="btn-row"><button class="btn btn-gh" onclick="prv(3)">← Retour</button><button class="btn btn-p" onclick="nxt(3)">Continuer →</button></div>
+</div>
+
+<div class="step" id="s4">
+  <div class="step-hd"><span class="step-n">04</span><div><div class="step-t">Quelle est votre situation institutionnelle actuelle ?</div><div class="step-hint">Votre statut conditionne certains appels (ex. ANR JCJC).</div></div></div>
+  <div class="choices c1">
+    <label class="choice"><input type="radio" name="q_stat" value="assoc"><div class="cl"><span class="cm">Postdoc associé(e) non financé(e)</span><span class="cs">Rattaché(e) à un labo (UMR, EA…) sans contrat salarié</span></div></label>
+    <label class="choice"><input type="radio" name="q_stat" value="funded"><div class="cl"><span class="cm">Postdoc avec contrat (CDD ou CDI)</span><span class="cs">Salarié(e) dans un labo ou une institution</span></div></label>
+    <label class="choice"><input type="radio" name="q_stat" value="indep"><div class="cl"><span class="cm">Chercheur(se) indépendant(e)</span><span class="cs">Sans affiliation institutionnelle</span></div></label>
+    <label class="choice"><input type="radio" name="q_stat" value="mcf"><div class="cl"><span class="cm">Enseignant-chercheur (MCF, lecturer…)</span><span class="cs">Poste permanent ou équivalent</span></div></label>
+  </div>
+  <div class="btn-row"><button class="btn btn-gh" onclick="prv(4)">← Retour</button><button class="btn btn-p" onclick="nxt(4)">Continuer →</button></div>
+</div>
+
+<div class="step" id="s5">
+  <div class="step-hd"><span class="step-n">05</span><div><div class="step-t">Quelle est votre spécialité archéologique ?</div><div class="step-hint">Sélectionnez tout ce qui correspond à vos travaux.</div></div></div>
+  <div class="tag-grid" id="tg_spec">
+    <div class="tag-opt" data-v="prehist">Préhistoire</div>
+    <div class="tag-opt" data-v="protohistoire">Protohistoire</div>
+    <div class="tag-opt" data-v="antiquite">Antiquité classique</div>
+    <div class="tag-opt" data-v="bioarch">Bioarchéologie</div>
+    <div class="tag-opt" data-v="archeo_mort">Archéologie funéraire</div>
+    <div class="tag-opt" data-v="paleogenom">Paléogénomique / ADN ancien</div>
+    <div class="tag-opt" data-v="medieval">Archéologie médiévale</div>
+    <div class="tag-opt" data-v="anthropo">Anthropologie / Ethnoarchéologie</div>
+    <div class="tag-opt" data-v="archeo_env">Archéologie environnementale</div>
+    <div class="tag-opt" data-v="archeo_sci">Archéométrie / Sciences du patrimoine</div>
+    <div class="tag-opt" data-v="numismat">Numismatique / Épigraphie</div>
+    <div class="tag-opt" data-v="histoire_art">Histoire de l'art / Iconographie</div>
+    <div class="tag-opt" data-v="autre_shs">Autre SHS</div>
+  </div>
+  <div class="btn-row"><button class="btn btn-gh" onclick="prv(5)">← Retour</button><button class="btn btn-p" onclick="nxt(5)">Continuer →</button></div>
+</div>
+
+<div class="step" id="s6">
+  <div class="step-hd"><span class="step-n">06</span><div><div class="step-t">Quelle(s) période(s) chronologique(s) ?</div><div class="step-hint">Sélectionnez toutes les périodes concernées.</div></div></div>
+  <div class="tag-grid" id="tg_period">
+    <div class="tag-opt" data-v="paleolith">Paléolithique</div>
+    <div class="tag-opt" data-v="neolith">Néolithique / Mésolithique</div>
+    <div class="tag-opt" data-v="age_bronze">Âge du Bronze</div>
+    <div class="tag-opt" data-v="age_fer">Âge du Fer</div>
+    <div class="tag-opt" data-v="antiquite_p">Antiquité (Grèce, Rome…)</div>
+    <div class="tag-opt" data-v="protohistoire_p">Protohistoire régionale</div>
+    <div class="tag-opt" data-v="medieval_p">Médiéval</div>
+    <div class="tag-opt" data-v="moderne_p">Moderne / Contemporain</div>
+    <div class="tag-opt" data-v="multi_p">Multi-périodes / Longue durée</div>
+  </div>
+  <div class="btn-row"><button class="btn btn-gh" onclick="prv(6)">← Retour</button><button class="btn btn-p" onclick="nxt(6)">Continuer →</button></div>
+</div>
+
+<div class="step" id="s7">
+  <div class="step-hd"><span class="step-n">07</span><div><div class="step-t">Quelle(s) zone(s) géographique(s) de recherche ?</div><div class="step-hint">Sélectionnez toutes les zones concernées — active des financeurs spécialisés.</div></div></div>
+  <div class="tag-grid" id="tg_zone">
+    <div class="tag-opt" data-v="france">France / Territoire national</div>
+    <div class="tag-opt" data-v="europe_occ">Europe occidentale</div>
+    <div class="tag-opt" data-v="europe_orient">Europe orientale / Balkans</div>
+    <div class="tag-opt" data-v="med">Méditerranée / Proche-Orient</div>
+    <div class="tag-opt" data-v="afrique_nord">Afrique du Nord / Égypte</div>
+    <div class="tag-opt" data-v="afrique_ss">Afrique subsaharienne</div>
+    <div class="tag-opt" data-v="asie_sud">Asie du Sud (Inde, Sri Lanka…)</div>
+    <div class="tag-opt" data-v="asie_se">Asie du Sud-Est</div>
+    <div class="tag-opt" data-v="asie_e">Asie de l'Est (Chine, Japon, Corée)</div>
+    <div class="tag-opt" data-v="asie_c">Asie centrale</div>
+    <div class="tag-opt" data-v="ameriques">Amériques</div>
+    <div class="tag-opt" data-v="oceanie">Océanie / Pacifique</div>
+  </div>
+  <div class="btn-row"><button class="btn btn-gh" onclick="prv(7)">← Retour</button><button class="btn btn-p" onclick="nxt(7)">Continuer →</button></div>
+</div>
+
+<div class="step" id="s8">
+  <div class="step-hd"><span class="step-n">08</span><div><div class="step-t">Votre thèse est-elle publiée en monographie ?</div><div class="step-hint">Certaines fondations (ex. Gerda Henkel) exigent une publication chez un éditeur.</div></div></div>
+  <div class="choices">
+    <label class="choice"><input type="radio" name="q_mono" value="yes"><div class="cl"><span class="cm">✅ Oui, chez un éditeur</span><span class="cs">Imprimé ou numérique (OpenEdition, Archaeopress…)</span></div></label>
+    <label class="choice"><input type="radio" name="q_mono" value="repo"><div class="cl"><span class="cm">📂 Dépôt institutionnel</span><span class="cs">theses.fr, HAL, dépôt universitaire…</span></div></label>
+    <label class="choice"><input type="radio" name="q_mono" value="inprog"><div class="cl"><span class="cm">📝 En cours de publication</span><span class="cs">Contrat signé ou soumis à un éditeur</span></div></label>
+    <label class="choice"><input type="radio" name="q_mono" value="no"><div class="cl"><span class="cm">❌ Non publiée</span></div></label>
+  </div>
+  <div class="btn-row"><button class="btn btn-gh" onclick="prv(8)">← Retour</button><button class="btn btn-p" onclick="nxt(8)">Continuer →</button></div>
+</div>
+
+<div class="step" id="s9">
+  <div class="step-hd"><span class="step-n">09</span><div><div class="step-t">Avez-vous des liens avec ces systèmes de recherche ?</div><div class="step-hint">Même des collaborations informelles peuvent ouvrir des droits.</div></div></div>
+  <div class="cg">
+    <div class="ci" onclick="tc(this,'l_de')"><div class="cb"></div><div class="ct"><div class="ctm">🇩🇪 Lien avec la recherche allemande</div><div class="cts">Collaboration, co-publication, séjour dans une institution allemande</div></div></div>
+    <div class="ci" onclick="tc(this,'l_uk')"><div class="cb"></div><div class="ct"><div class="ctm">🇬🇧 Diplôme ou poste au Royaume-Uni</div><div class="cts">Formation ou emploi dans une institution britannique</div></div></div>
+    <div class="ci" onclick="tc(this,'l_nl')"><div class="cb"></div><div class="ct"><div class="ctm">🇳🇱 PhD ou partenaire aux Pays-Bas</div><div class="cts">Thèse NL ou collaboration institutionnelle</div></div></div>
+    <div class="ci" onclick="tc(this,'l_ch')"><div class="cb"></div><div class="ct"><div class="ctm">🇨🇭 Travail en Suisse (≥ 2 ans)</div><div class="cts">Affiliation prolongée dans une institution suisse</div></div></div>
+    <div class="ci" onclick="tc(this,'l_at')"><div class="cb"></div><div class="ct"><div class="ctm">🇦🇹 Mentor potentiel en Autriche</div><div class="cts">Contact académique pouvant être mentor FWF ESPRIT</div></div></div>
+    <div class="ci" onclick="tc(this,'l_jp')"><div class="cb"></div><div class="ct"><div class="ctm">🇯🇵 Partenaire de recherche au Japon</div><div class="cts">Contact pouvant rédiger une lettre d'invitation JSPS</div></div></div>
+    <div class="ci" onclick="tc(this,'l_efeo')"><div class="cb"></div><div class="ct"><div class="ctm">EFEO — collaboration existante</div><div class="cts">Co-travaux avec des chercheurs de l'École française d'Extrême-Orient</div></div></div>
+  </div>
+  <div class="btn-row"><button class="btn btn-gh" onclick="prv(9)">← Retour</button><button class="btn btn-p" onclick="nxt(9)">Continuer →</button></div>
+</div>
+
+<div class="step" id="s10">
+  <div class="step-hd"><span class="step-n">10</span><div><div class="step-t">Avez-vous déjà bénéficié de ces financements ?</div><div class="step-hint">Pour ne pas vous suggérer des bourses non renouvelables déjà perçues.</div></div></div>
+  <div class="cg">
+    <div class="ci" onclick="tc(this,'h_msca')"><div class="cb"></div><div class="ct"><div class="ctm">MSCA Postdoctoral Fellowship</div></div></div>
+    <div class="ci" onclick="tc(this,'h_anr_access')"><div class="cb"></div><div class="ct"><div class="ctm">ANR Access ERC</div></div></div>
+    <div class="ci" onclick="tc(this,'h_wenner')"><div class="cb"></div><div class="ct"><div class="ctm">Wenner-Gren (Post-PhD Grant ou Hunt Fellowship)</div></div></div>
+    <div class="ci" onclick="tc(this,'h_fyssen')"><div class="cb"></div><div class="ct"><div class="ctm">Fondation Fyssen</div></div></div>
+    <div class="ci" onclick="tc(this,'h_gerda')"><div class="cb"></div><div class="ct"><div class="ctm">Gerda Henkel Stiftung</div></div></div>
+    <div class="ci" onclick="tc(this,'h_mqb')"><div class="cb"></div><div class="ct"><div class="ctm">Musée du Quai Branly — contrat postdoctoral</div></div></div>
+    <div class="ci" onclick="tc(this,'h_none')"><div class="cb"></div><div class="ct"><div class="ctm">✨ Aucun de ces financements</div></div></div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-gh" onclick="prv(10)">← Retour</button>
+    <button class="btn btn-g" onclick="go()">🔍 Voir mes financements →</button>
+  </div>
+</div>
+
+</div><!-- /wizard -->
+
+<div id="results">
+  <div class="rh"><div class="rt" id="rTitle"></div><div class="rc" id="rCount"></div></div>
+  <div class="pchips" id="pChips"></div>
+  <div class="ics-bar" id="icsBar" style="display:none">
+    <p><strong>📅 Exporter le calendrier</strong> — Téléchargez les dates de clôture avec rappels 6 semaines avant chaque deadline, compatibles Apple Calendar, Google Calendar et Outlook.</p>
+    <button class="btn btn-p" onclick="exportICS()" style="font-size:.78rem;padding:9px 16px">⬇ Fichier .ics</button>
+  </div>
+  <div class="rf">
+    <button class="rfb active" onclick="fr('all',this)">Tous</button>
+    <button class="rfb" onclick="fr('open',this)">🟢 Ouverts</button>
+    <button class="rfb" onclick="fr('upcoming',this)">🟡 À venir</button>
+    <button class="rfb" onclick="fr('p1',this)">⭐ Prioritaires</button>
+  </div>
+  <div id="gList"></div>
+  <div class="restart-bar">
+    <p>Modifier votre profil ou simuler un autre scénario ?</p>
+    <button class="btn btn-gh" onclick="restart()">↩ Recommencer</button>
+  </div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+// ═══ GLOBALS ═══
+const TODAY = new Date();
+let GRANTS = [];
+let META = {};
+let P = {phd:null,age:null,cty:null,stat:null,mono:null,specs:[],periods:[],zones:[]};
+let CK = {};
+let matched = [];
+let curStep = 1;
+const TOTAL = 10;
+
+// ═══ LOAD DATA ═══
+fetch('grants.json?v=' + Date.now())
+  .then(r => r.json())
+  .then(data => {
+    GRANTS = data.grants;
+    META = data.meta;
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('main').style.display = 'block';
+    document.getElementById('updatedLine').textContent =
+      'Données mises à jour le ' + new Date(META.last_updated).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+    initTags();
+  })
+  .catch(e => {
+    document.getElementById('loading').innerHTML =
+      '<p style="color:#a84632">⚠ Impossible de charger les données.<br>Vérifiez que grants.json est bien dans le même dossier.</p>';
+  });
+
+function initTags() {
+  document.querySelectorAll('.tag-grid').forEach(g => {
+    g.querySelectorAll('.tag-opt').forEach(t => {
+      t.addEventListener('click', () => t.classList.toggle('sel'));
+    });
+  });
+}
+
+// ═══ WIZARD NAV ═══
+function gv(n){const e=document.querySelector(`input[name="${n}"]:checked`);return e?e.value:null;}
+function getTags(id){return[...document.querySelectorAll(`#${id} .tag-opt.sel`)].map(t=>t.dataset.v);}
+function tc(el,key){
+  el.classList.toggle('on');CK[key]=el.classList.contains('on');
+  if(key==='h_none'&&CK[key]){Object.keys(CK).forEach(k=>{if(k!=='h_none'){CK[k]=false;document.querySelectorAll('.ci').forEach(ci=>{const m=ci.getAttribute('onclick').match(/'([^']+)'/);if(m&&m[1]===k)ci.classList.remove('on');});}});}
+  else if(key!=='h_none'){CK['h_none']=false;document.querySelectorAll('.ci[onclick*="h_none"]').forEach(ci=>ci.classList.remove('on'));}
+}
+function showStep(n){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(`s${n}`);if(el){el.classList.add('active');curStep=n;}
+  document.getElementById('pf').style.width=((n-1)/(TOTAL-1)*100)+'%';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function nxt(from){
+  if(from===1){P.phd=gv('q_phd');if(!P.phd){alert('Veuillez sélectionner une réponse.');return;}
+    if(P.phd==='no'){P.age='none';P.cty='other_eu';P.stat='assoc';P.mono='no';P.specs=[];P.periods=[];P.zones=[];go();return;}}
+  if(from===2){P.age=gv('q_age');if(!P.age){alert('Veuillez sélectionner.');return;}}
+  if(from===3){P.cty=gv('q_cty');if(!P.cty){alert('Veuillez sélectionner.');return;}}
+  if(from===4){P.stat=gv('q_stat');if(!P.stat){alert('Veuillez sélectionner.');return;}}
+  if(from===5){P.specs=getTags('tg_spec');}
+  if(from===6){P.periods=getTags('tg_period');}
+  if(from===7){P.zones=getTags('tg_zone');}
+  if(from===8){P.mono=gv('q_mono');if(!P.mono){alert('Veuillez sélectionner.');return;}}
+  if(from===9){P.l_de=!!CK['l_de'];P.l_uk=!!CK['l_uk'];P.l_nl=!!CK['l_nl'];P.l_ch=!!CK['l_ch'];P.l_at=!!CK['l_at'];P.l_jp=!!CK['l_jp'];P.l_efeo=!!CK['l_efeo'];}
+  showStep(from+1);
+}
+function prv(from){showStep(from-1);}
+
+// ═══ ELIGIBILITY ENGINE ═══
+function isEligible(g) {
+  const r = g.elig_rules || {};
+  // PhD
+  if(r.phd && !r.phd.includes(P.phd)) return false;
+  // age
+  if(r.age && !r.age.includes(P.age)) return false;
+  // stat
+  if(r.stat && !r.stat.includes(P.stat)) return false;
+  // monograph required
+  if(r.mono_required && P.mono !== 'yes') return false;
+  // exclude if already received
+  if(r.exclude_if_had && r.exclude_if_had.some(h => CK[h])) return false;
+  // links required
+  if(r.links_required && !r.links_required.every(l => P[l])) return false;
+  // cty or link (Leverhulme)
+  if(r.cty_or_link) {
+    const ctyOk = r.cty_or_link.cty.includes(P.cty);
+    const lnkOk = P[r.cty_or_link.link];
+    if(!ctyOk && !lnkOk) return false;
+  }
+  // cty exclude (British Academy)
+  if(r.cty_exclude && r.cty_exclude.includes(P.cty)) return false;
+  if(r.link_exclude && P[r.link_exclude]) return false;
+  // zones_any: grant requires at least one matching zone
+  if(r.zones_any && r.zones_any.length > 0) {
+    if(P.zones.length > 0 && !r.zones_any.some(z => P.zones.includes(z))) return false;
+    if(P.zones.length === 0) return false; // if grant needs zone, user must have selected one
+  }
+  return true;
+}
+
+function getWarnings(g) {
+  const r = g.elig_rules || {};
+  const w = [];
+  if(r.links_recommended && !r.links_recommended.every(l => P[l]))
+    w.push('Un partenaire dans une institution correspondante est recommandé');
+  if(P.cty==='fr' && g.id==='msca')
+    w.push('Règle de mobilité à vérifier selon votre résidence récente en France');
+  if((P.mono==='repo'||P.mono==='inprog') && r.mono_required)
+    w.push(P.mono==='repo' ? 'Dépôt institutionnel insuffisant — publication chez un éditeur requise'
+                           : 'Publication en cours : éligible à la prochaine session si finalisée');
+  return w;
+}
+
+// ═══ RESULTS ═══
+function go(){
+  ['l_de','l_uk','l_nl','l_ch','l_at','l_jp','l_efeo'].forEach(k=>{if(P[k]===undefined)P[k]=false;});
+  ['h_msca','h_anr_access','h_wenner','h_fyssen','h_gerda','h_mqb'].forEach(k=>{if(CK[k]===undefined)CK[k]=false;});
+
+  matched = GRANTS.filter(g => {
+    if(!isEligible(g)) return false;
+    // soft spec filter
+    if(g.specs && g.specs.length>0 && P.specs.length>0 && !g.specs.some(s=>P.specs.includes(s))) return false;
+    return true;
+  });
+
+  document.getElementById('wizard').style.display='none';
+  document.getElementById('results').style.display='block';
+  document.getElementById('pf').style.width='100%';
+  window.scrollTo({top:0,behavior:'smooth'});
+
+  const open=matched.filter(g=>['soon','open'].includes(gst(g.deadline))).length;
+  document.getElementById('rTitle').textContent = matched.length>0
+    ? `${matched.length} financement${matched.length>1?'s':''} accessible${matched.length>1?'s':''} pour votre profil`
+    : 'Aucun financement direct trouvé';
+  document.getElementById('rCount').textContent=`${open} appel${open>1?'s':''} ouvert${open>1?'s':''} · ${matched.length} au total`;
+  if(matched.length>0) document.getElementById('icsBar').style.display='flex';
+
+  const chips=[];
+  const ageL={lt1:'PhD < 1 an','1to2':'PhD 1-2 ans','2to4':'PhD 2-4 ans','4to6':'PhD 4-6 ans','6to10':'PhD 6-10 ans',gt10:'PhD > 10 ans',none:'Doctorant(e)'};
+  const ctyL={fr:'🇫🇷 France',de:'🇩🇪 Allemagne',uk:'🇬🇧 UK',nl:'🇳🇱 Pays-Bas',ch:'🇨🇭 Suisse',at:'🇦🇹 Autriche',other_eu:'🇪🇺 Autre UE',non_eu:'🌍 Hors Europe'};
+  if(P.age) chips.push(ageL[P.age]||P.age);
+  if(P.cty) chips.push(ctyL[P.cty]||P.cty);
+  P.zones.slice(0,3).forEach(z=>chips.push(zL(z)));
+  P.specs.slice(0,2).forEach(s=>chips.push(spL(s)));
+  document.getElementById('pChips').innerHTML=chips.map(c=>`<span class="pch">${c}</span>`).join('');
+
+  render('all');
+}
+
+const ZL={france:'France',europe_occ:'Europe occ.',europe_orient:'Europe orient.',med:'Méditerranée',afrique_nord:'Afrique N.',afrique_ss:'Afrique ss.',asie_sud:'Asie du Sud',asie_se:'Asie du Sud-Est',asie_e:'Asie de l\'Est',asie_c:'Asie centrale',ameriques:'Amériques',oceanie:'Océanie'};
+const SPL={prehist:'Préhistoire',protohistoire:'Protohistoire',antiquite:'Antiquité',bioarch:'Bioarchéologie',archeo_mort:'Archéo. funéraire',paleogenom:'Paléogénomique',medieval:'Médiéval',anthropo:'Anthropologie',archeo_env:'Archéo. env.',archeo_sci:'Archéométrie',numismat:'Numismatique',histoire_art:'Hist. de l\'art',autre_shs:'SHS'};
+function zL(z){return ZL[z]||z;}
+function spL(s){return SPL[s]||s;}
+
+function gst(d){
+  const dl=new Date(d);if(dl.getFullYear()===2099)return'open';
+  const n=Math.ceil((dl-TODAY)/864e5);
+  if(n<0)return'closed';if(n<=45)return'soon';if(n<=400)return'open';return'upcoming';
+}
+function fd(d){const dl=new Date(d);if(dl.getFullYear()===2099)return'Candidature continue';return dl.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});}
+function du(d){const dl=new Date(d);if(dl.getFullYear()===2099)return 999;return Math.ceil((dl-TODAY)/864e5);}
+function ct(d){const n=du(d);if(n===999)return'Continue';if(n<0)return'Fermé';if(n<=45)return`${n}j restants`;if(n<365)return`${n}j`;return`~${Math.ceil(n/30)} mois`;}
+function sc(s){return{soon:'bu',open:'bo',upcoming:'bup',closed:'bsl'}[s]||'bsl';}
+function sl(s){return{soon:'⚡ Urgent',open:'✓ Ouvert',upcoming:'◷ À venir',closed:'Fermé'}[s]||s;}
+function pc(s){return{soon:'cpu',open:'cpo',upcoming:'cpup'}[s]||'cpup';}
+
+function render(f){
+  let g=[...matched];
+  if(f==='open') g=g.filter(x=>['soon','open'].includes(gst(x.deadline)));
+  else if(f==='upcoming') g=g.filter(x=>gst(x.deadline)==='upcoming');
+  else if(f==='p1') g=g.filter(x=>x.priority===1);
+  const ord={soon:0,open:1,upcoming:2,closed:3};
+  g.sort((a,b)=>{const sa=gst(a.deadline),sb=gst(b.deadline);if(ord[sa]!==ord[sb])return ord[sa]-ord[sb];if(a.priority!==b.priority)return a.priority-b.priority;return new Date(a.deadline)-new Date(b.deadline);});
+  const list=document.getElementById('gList');
+  if(!g.length){list.innerHTML=`<div class="no-res"><div class="ico">🔍</div><p>Aucun résultat pour ce filtre.<br>Essayez "Tous".</p></div>`;return;}
+  const plab={1:'⭐ Prioritaire',2:'Recommandé',3:'À explorer'};
+  list.innerHTML=g.map(x=>{
+    const st=gst(x.deadline),w=getWarnings(x);
+    const nameHtml=x.url?`<a href="${x.url}" target="_blank" rel="noopener">${x.name}</a>`:x.name;
+    return`<div class="gc p${x.priority}">
+<div class="gt"><div class="gfl">${x.flag}</div><div class="gm">
+  <div class="gbs"><span class="bdg ${sc(st)}">${sl(st)}</span><span class="bdg bsl">${plab[x.priority]||''}</span></div>
+  <div class="gn">${nameHtml}</div><div class="go">${x.org}</div>
+  <div class="ga">${x.amount}</div>
+  <div class="gdr"><span class="gdl">Clôture :</span><span class="gdv">${fd(x.deadline)}</span><span class="cp ${pc(st)}">${ct(x.deadline)}</span></div>
+  ${w.length?`<div class="warn-box">${w.map(ww=>`⚠ ${ww}`).join('<br>')}</div>`:''}
+</div></div>
+<button class="gtog" onclick="tog('${x.id}',this)"><span class="tarr">▾</span> Voir détails & documents requis</button>
+<div class="gexp" id="exp-${x.id}"><div class="gin">
+  <div><div class="gst">À SAVOIR</div><div class="gnote">${x.note}</div></div>
+  <div><div class="gst">DOCUMENTS REQUIS</div><ul class="dl">${x.docs.map(d=>`<li>${d}</li>`).join('')}</ul></div>
+</div></div>
+</div>`;}).join('');
+}
+
+function tog(id,btn){const e=document.getElementById(`exp-${id}`);const o=e.classList.toggle('open');btn.classList.toggle('open',o);btn.childNodes[1].textContent=o?' Masquer':' Voir détails & documents requis';}
+function fr(f,btn){document.querySelectorAll('.rfb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render(f);}
+
+function restart(){
+  P={phd:null,age:null,cty:null,stat:null,mono:null,specs:[],periods:[],zones:[]};CK={};matched=[];
+  document.querySelectorAll('input[type=radio]').forEach(i=>i.checked=false);
+  document.querySelectorAll('.ci').forEach(i=>i.classList.remove('on'));
+  document.querySelectorAll('.tag-opt').forEach(t=>t.classList.remove('sel'));
+  document.getElementById('wizard').style.display='block';
+  document.getElementById('results').style.display='none';
+  showStep(1);
+}
+
+function exportICS(){
+  const gs=matched.filter(g=>new Date(g.deadline).getFullYear()!==2099);
+  const stamp=new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+  const san=s=>s.replace(/[,;\\]/g,'').replace(/\n/g,' ');
+  let ics='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//GrantMatch SHS//FR\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\nX-WR-CALNAME:GrantMatch — Mes Financements\r\n';
+  gs.forEach(g=>{
+    const d=new Date(g.deadline),ds=`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+    const al=new Date(d);al.setDate(al.getDate()-42);
+    const as=`${al.getFullYear()}${String(al.getMonth()+1).padStart(2,'0')}${String(al.getDate()).padStart(2,'0')}`;
+    ics+=`BEGIN:VEVENT\r\nUID:gm-${g.id}@shs\r\nDTSTAMP:${stamp}\r\nDTSTART;VALUE=DATE:${ds}\r\nDTEND;VALUE=DATE:${ds}\r\nSUMMARY:⏰ CLÔTURE — ${san(g.name)}\r\nDESCRIPTION:${san(g.org)} | ${san(g.amount)} | ${san(g.url||'')}\r\nCATEGORIES:Financement,SHS\r\nBEGIN:VALARM\r\nTRIGGER;VALUE=DATE-TIME:${as}T080000Z\r\nACTION:DISPLAY\r\nDESCRIPTION:⚠ Candidature dans 6 semaines — ${san(g.name)}\r\nEND:VALARM\r\nEND:VEVENT\r\n`;
+  });
+  ics+='END:VCALENDAR\r\n';
+  const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='grantmatch.ics';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
