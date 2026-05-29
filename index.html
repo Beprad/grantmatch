@@ -396,6 +396,40 @@ h1 em{font-style:italic;color:var(--gold)}
     <button class="rfb" onclick="filterJobs('intl',this)">🌍 International</button>
   </div>
 
+  <div class="jobs-filters jobs-filters-age">
+    <button class="rfb active" onclick="filterJobsAge('all',this)">Toutes les thèses</button>
+    <button class="rfb" onclick="filterJobsAge('lt1',this)"><1 an</button>
+    <button class="rfb" onclick="filterJobsAge('1to2',this)">1-2 ans</button>
+    <button class="rfb" onclick="filterJobsAge('2to4',this)">2-4 ans</button>
+    <button class="rfb" onclick="filterJobsAge('4to6',this)">4-6 ans</button>
+    <button class="rfb" onclick="filterJobsAge('6to10',this)">6-10 ans</button>
+    <button class="rfb" onclick="filterJobsAge('gt10',this)">>10 ans</button>
+  </div>
+
+  <div class="jobs-filters jobs-filters-stat">
+    <button class="rfb active" onclick="filterJobsStat('all',this)">Tous statuts</button>
+    <button class="rfb" onclick="filterJobsStat('assoc',this)">Postdoc associé</button>
+    <button class="rfb" onclick="filterJobsStat('funded',this)">Contractuel</button>
+    <button class="rfb" onclick="filterJobsStat('indep',this)">Indépendant</button>
+    <button class="rfb" onclick="filterJobsStat('mcf',this)">MCF / permanent</button>
+  </div>
+
+  <div class="tag-grid" id="job-spec-filters">
+    <div class="tag-opt" data-v="prehist">Préhistoire</div>
+    <div class="tag-opt" data-v="protohistoire">Protohistoire</div>
+    <div class="tag-opt" data-v="antiquite">Antiquité classique</div>
+    <div class="tag-opt" data-v="bioarch">Bioarchéologie</div>
+    <div class="tag-opt" data-v="archeo_mort">Archéologie funéraire</div>
+    <div class="tag-opt" data-v="paleogenom">Paléogénomique / ADN ancien</div>
+    <div class="tag-opt" data-v="medieval">Archéologie médiévale</div>
+    <div class="tag-opt" data-v="anthropo">Anthropologie / Ethnoarchéologie</div>
+    <div class="tag-opt" data-v="archeo_env">Archéologie environnementale</div>
+    <div class="tag-opt" data-v="archeo_sci">Archéométrie / Sciences du patrimoine</div>
+    <div class="tag-opt" data-v="numismat">Numismatique / Épigraphie</div>
+    <div class="tag-opt" data-v="histoire_art">Histoire de l'art / Iconographie</div>
+    <div class="tag-opt" data-v="autre_shs">Autre SHS</div>
+  </div>
+
   <div id="jobList"></div>
 
   <!-- FORMULAIRE DE SIGNALEMENT -->
@@ -468,6 +502,9 @@ let CK = {};
 let matched = [];
 let JOB_ZONE = 'all';
 let JOB_MODE = 'active';
+let JOB_AGE = 'all';
+let JOB_STAT = 'all';
+let JOB_SPECS = [];
 let curStep = 1;
 const TOTAL = 9;
 
@@ -538,7 +575,10 @@ Promise.all([
 
 function initTags(){
   document.querySelectorAll('.tag-grid').forEach(g=>
-    g.querySelectorAll('.tag-opt').forEach(t=>t.addEventListener('click',()=>t.classList.toggle('sel')))
+    g.querySelectorAll('.tag-opt').forEach(t=>t.addEventListener('click',()=>{
+      if(g.id==='job-spec-filters') return toggleJobSpec(t);
+      t.classList.toggle('sel');
+    }))
   );
 }
 
@@ -713,6 +753,9 @@ function renderJobs(){
   if(JOB_ZONE==='france') jobs=jobs.filter(j=>j.country==='france');
   else if(JOB_ZONE==='europe') jobs=jobs.filter(j=>['france','de','uk','other_eu','nl','ch','at'].includes(j.country));
   else if(JOB_ZONE==='intl') jobs=jobs.filter(j=>!['france','de','uk','other_eu','nl','ch','at'].includes(j.country));
+  if(JOB_AGE!=='all') jobs=jobs.filter(j=>Array.isArray(j.age)?j.age.includes(JOB_AGE):j.age===JOB_AGE);
+  if(JOB_STAT!=='all') jobs=jobs.filter(j=>Array.isArray(j.stat)?j.stat.includes(JOB_STAT):j.stat===JOB_STAT);
+  if(JOB_SPECS.length) jobs=jobs.filter(j=>Array.isArray(j.specs)&&j.specs.some(s=>JOB_SPECS.includes(s)));
   const ord={soon:0,open:1,upcoming:2,closed:3};
   jobs.sort((a,b)=>{
     const sa=gst(a.deadline), sb=gst(b.deadline);
@@ -738,6 +781,23 @@ function filterJobsMode(mode,btn){
   document.querySelectorAll('.jobs-filters-mode .rfb').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   JOB_MODE=mode;
+  renderJobs();
+}
+function filterJobsAge(age,btn){
+  document.querySelectorAll('.jobs-filters-age .rfb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  JOB_AGE=age;
+  renderJobs();
+}
+function filterJobsStat(stat,btn){
+  document.querySelectorAll('.jobs-filters-stat .rfb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  JOB_STAT=stat;
+  renderJobs();
+}
+function toggleJobSpec(el){
+  el.classList.toggle('sel');
+  JOB_SPECS=[...document.querySelectorAll('#job-spec-filters .tag-opt.sel')].map(t=>t.dataset.v);
   renderJobs();
 }
 
