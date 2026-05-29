@@ -348,7 +348,7 @@ def scrape_rss(feed_config, existing_ids):
                 "deadline":  deadline,
                 "summary":   summary[:400].strip() if summary else "",
                 "auto":      True,
-                "validated": False,
+                "validated": True,
                 "active":    True,
             }
             results.append(item)
@@ -391,7 +391,7 @@ def scrape_academic_positions(existing_ids):
                 "deadline":  deadline,
                 "summary":   block[:400].strip(),
                 "auto":      True,
-                "validated": False,
+                "validated": True,
                 "active":    True,
             })
     except Exception as e:
@@ -465,7 +465,7 @@ def scrape_usajobs(existing_ids):
                     "salary":    salary_str,
                     "summary":   f"{org} | {locations}",
                     "auto":      True,
-                    "validated": False,
+                    "validated": True,
                     "active":    True,
                 })
         except Exception as e:
