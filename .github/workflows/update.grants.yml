@@ -1,0 +1,73 @@
+name: 🔄 Mise à jour automatique des financements
+
+on:
+  schedule:
+    # Tous les lundis à 7h00 UTC
+    - cron: '0 7 * * 1'
+  workflow_dispatch:
+    # Permet aussi un déclenchement manuel depuis l'onglet Actions
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout du dépôt
+        uses: actions/checkout@v4
+
+      - name: Installation Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Installation des dépendances
+        run: pip install requests feedparser python-dateutil
+
+      - name: Exécution du script de veille
+        run: python scripts/scraper.py
+
+      - name: Vérifier s'il y a des changements
+        id: check
+        run: |
+          git diff --quiet discovered.json grants.json || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Créer une Pull Request si des nouveautés ont été trouvées
+        if: steps.check.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "🤖 Mise à jour automatique — nouvelles opportunités détectées"
+          title: "🔍 Nouvelles bourses/postdocs détectés — à valider"
+          body: |
+            ## Mise à jour automatique du ${{ env.DATE }}
+
+            Le script de veille a détecté des changements.
+
+            ### Ce qu'il faut vérifier :
+            - **`discovered.json`** — nouvelles annonces issues de Calenda, EURAXESS et des sites des fondations
+            - **`grants.json`** — vérifier si des deadlines ont changé
+
+            ### Comment valider :
+            1. Consultez l'onglet **Files changed** ci-dessous
+            2. Pour chaque nouvelle annonce dans `discovered.json`, copiez-collez le bloc dans `grants.json` si pertinent
+            3. Mergez cette PR pour mettre le site à jour
+
+            > ⚠️ Ce PR est créé automatiquement — **toujours vérifier les données avant de merger**.
+          branch: auto-update/grants
+          delete-branch: true
+          labels: "mise à jour automatique"
+
+      - name: Mettre à jour la date dans grants.json si des deadlines ont changé
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          python -c "
+          import json, datetime
+          with open('grants.json', 'r') as f:
+              data = json.load(f)
+          data['meta']['last_checked'] = datetime.date.today().isoformat()
+          with open('grants.json', 'w') as f:
+              json.dump(data, f, ensure_ascii=False, indent=2)
+          "
