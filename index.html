@@ -385,7 +385,11 @@ h1 em{font-style:italic;color:var(--gold)}
   </div>
 
   <!-- Filtres jobs -->
-  <div class="jobs-filters">
+  <div class="jobs-filters jobs-filters-mode">
+    <button class="rfb active" onclick="filterJobsMode('active',this)">Offres actives</button>
+    <button class="rfb" onclick="filterJobsMode('all',this)">Toutes les offres</button>
+  </div>
+  <div class="jobs-filters jobs-filters-zone">
     <button class="rfb active" onclick="filterJobs('all',this)">Toutes les zones</button>
     <button class="rfb" onclick="filterJobs('france',this)">🇫🇷 France</button>
     <button class="rfb" onclick="filterJobs('europe',this)">🇪🇺 Europe</button>
@@ -462,6 +466,8 @@ let GRANTS = [], JOBS = [], META = {};
 let P = {age:null,cty:null,stat:null,mono:null,specs:[],zones:[]};
 let CK = {};
 let matched = [];
+let JOB_ZONE = 'all';
+let JOB_MODE = 'active';
 let curStep = 1;
 const TOTAL = 9;
 
@@ -700,19 +706,39 @@ function render(f){
 }
 
 // ═══ JOBS TAB ═══
-function renderJobs(filter){
+function renderJobs(){
   const list=document.getElementById('jobList');
-  let jobs=[...JOBS].filter(j=>new Date(j.deadline)>=TODAY||(du(j.deadline)>-30));
-  if(filter==='france') jobs=jobs.filter(j=>j.country==='france');
-  else if(filter==='europe') jobs=jobs.filter(j=>['france','de','uk','other_eu','nl','ch','at'].includes(j.country));
-  else if(filter==='intl') jobs=jobs.filter(j=>!['france','de','uk','other_eu','nl','ch','at'].includes(j.country));
-  jobs.sort((a,b)=>new Date(a.deadline)-new Date(b.deadline));
-  if(!jobs.length){list.innerHTML=`<div class="job-empty">Aucune offre postdoc en cours.<br><span style="font-size:.75rem;color:var(--muted)">Utilisez le formulaire ci-dessous pour en signaler une.</span></div>`;return;}
+  let jobs=[...JOBS];
+  if(JOB_MODE==='active') jobs=jobs.filter(j=>new Date(j.deadline)>=TODAY||(du(j.deadline)>-30));
+  if(JOB_ZONE==='france') jobs=jobs.filter(j=>j.country==='france');
+  else if(JOB_ZONE==='europe') jobs=jobs.filter(j=>['france','de','uk','other_eu','nl','ch','at'].includes(j.country));
+  else if(JOB_ZONE==='intl') jobs=jobs.filter(j=>!['france','de','uk','other_eu','nl','ch','at'].includes(j.country));
+  const ord={soon:0,open:1,upcoming:2,closed:3};
+  jobs.sort((a,b)=>{
+    const sa=gst(a.deadline), sb=gst(b.deadline);
+    if(ord[sa]!==ord[sb]) return ord[sa]-ord[sb];
+    return new Date(a.deadline)-new Date(b.deadline);
+  });
+  if(!jobs.length){
+    const msg = JOB_MODE==='all'
+      ? 'Aucune offre postdoc trouvée pour ce filtre.<br><span style="font-size:.75rem;color:var(--muted)">Utilisez le formulaire ci-dessous pour en signaler une.</span>'
+      : 'Aucune offre postdoc active pour ce filtre.<br><span style="font-size:.75rem;color:var(--muted)">Basculez sur "Toutes les offres" pour voir l’historique.</span>';
+    list.innerHTML=`<div class="job-empty">${msg}</div>`;
+    return;
+  }
   list.innerHTML=jobs.map(j=>cardHTML(j,true)).join('');
 }
 function filterJobs(f,btn){
-  document.querySelectorAll('.jobs-filters .rfb').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');renderJobs(f);
+  document.querySelectorAll('.jobs-filters-zone .rfb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  JOB_ZONE=f;
+  renderJobs();
+}
+function filterJobsMode(mode,btn){
+  document.querySelectorAll('.jobs-filters-mode .rfb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  JOB_MODE=mode;
+  renderJobs();
 }
 
 function tog(id,btn){const e=document.getElementById(`exp-${id}`);const o=e.classList.toggle('open');btn.classList.toggle('open',o);btn.childNodes[1].textContent=o?' Masquer':' Voir les détails';}
