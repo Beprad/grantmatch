@@ -466,69 +466,71 @@ let curStep = 1;
 const TOTAL = 9;
 
 // ═══ LOAD DATA ═══
-Promise.all([
-  fetch('grants.json?v='+Date.now()).then(r=>r.json()),
-  fetch('jobs.json?v='+Date.now()).then(r=>r.json()).catch(()=>({jobs:[]}))
-]).then(async ([gdata, jdata]) => {
-  GRANTS = gdata.grants;
-  META = gdata.meta;
-  JOBS = (jdata.jobs||[]).filter(j=>j.active!==false);
+async function loadData() {
+  // 1. grants.json — obligatoire
+  let gdata;
   try {
-    const disc = await fetch('discovered.json?v='+Date.now()).then(r=>r.json()).catch(()=>({items:[]}));
+    const r = await fetch('grants.json?v='+Date.now());
+    gdata = await r.json();
+  } catch(e) {
+    document.getElementById('loading').innerHTML =
+      '<p style="color:#a84632;font-size:.85rem">⚠ Impossible de charger grants.json.<br><small>'+e+'</small></p>';
+    return;
+  }
+  GRANTS = gdata.grants || [];
+  META   = gdata.meta   || {};
+
+  // 2. jobs.json — optionnel
+  try {
+    const r = await fetch('jobs.json?v='+Date.now());
+    const jdata = await r.json();
+    JOBS = (jdata.jobs||[]).filter(j=>j.active!==false);
+  } catch(e) { JOBS = []; }
+
+  // 3. discovered.json — optionnel (offres auto)
+  try {
+    const r    = await fetch('discovered.json?v='+Date.now());
+    const disc = await r.json();
     const seen = new Set(JOBS.map(j=>j.id));
     for(const item of (disc.items||[]).filter(i=>i.active!==false)){
       if(!seen.has(item.id)){
-        JOBS.push({id:item.id,title:item.title,lab:item.lab||item.source,
-          country:item.country||'',flag:item.flag||'📋',
-          deadline:item.deadline||'2099-12-31',salary:item.salary||null,
-          url:item.url,description:item.summary,source:item.source+' (auto)',
-          added:item.published||'',active:true,auto:true,type:item.type||'postdoc'});
-        seen.add(item.id);
-      }
-    }
-  } catch(e){}
-  // Also load auto-discovered jobs
-  try {
-    const disc = await fetch('discovered.json?v='+Date.now()).then(r=>r.json()).catch(()=>({items:[]}));
-    const autoJobs = (disc.items||[]).filter(i=>i.active!==false&&i.validated!==false);
-    // merge, deduplicate by id
-    const seen = new Set(JOBS.map(j=>j.id));
-    for(const item of autoJobs){
-      if(!seen.has(item.id)){
-        // normalise fields
         JOBS.push({
-          id: item.id,
-          title: item.title,
-          lab: item.lab||item.source,
-          country: item.country||'',
-          flag: item.flag||'📋',
-          deadline: item.deadline||'2099-12-31',
-          salary: item.salary||null,
-          url: item.url,
-          description: item.summary,
-          source: item.source+' (auto)',
-          added: item.published||'',
-          active: true,
-          auto: true,
-          type: item.type||'postdoc',
+          id:          item.id,
+          title:       item.title       || '',
+          lab:         item.lab         || item.source || '',
+          country:     item.country     || '',
+          flag:        item.flag        || '📋',
+          deadline:    item.deadline    || '2099-12-31',
+          salary:      item.salary      || null,
+          url:         item.url         || '',
+          description: item.summary     || '',
+          source:      (item.source||'')+(item.auto?' (auto)':''),
+          added:       item.published   || '',
+          active:      true,
+          auto:        !!item.auto,
+          type:        item.type        || 'postdoc',
+          zones:       item.zones       || [],
+          specs:       item.specs       || [],
         });
         seen.add(item.id);
       }
     }
-  } catch(e){}
+  } catch(e) {}
 
-  document.getElementById('loading').style.display='none';
-  document.getElementById('main').style.display='block';
-  document.getElementById('updatedLine').textContent =
-    'Données mises à jour le ' + new Date(META.last_updated).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
-
+  // 4. Afficher l'interface
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('main').style.display    = 'block';
+  if(META.last_updated) {
+    document.getElementById('updatedLine').textContent =
+      'Données mises à jour le ' +
+      new Date(META.last_updated).toLocaleDateString('fr-FR',
+        {day:'numeric',month:'long',year:'numeric'});
+  }
   document.getElementById('badge-jobs').textContent = JOBS.length;
   initTags();
   renderJobs('all');
-}).catch(e => {
-  document.getElementById('loading').innerHTML =
-    '<p style="color:#a84632;font-size:.85rem">⚠ Impossible de charger les données.<br>Vérifiez que grants.json et jobs.json sont dans le même dossier.</p>';
-});
+}
+loadData();
 
 function initTags(){
   document.querySelectorAll('.tag-grid').forEach(g=>
