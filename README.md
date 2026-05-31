@@ -164,11 +164,7 @@ Chaque offre suit cette structure :
 ```
 
 Pour **désactiver** une offre expirée sans la supprimer : mettez `"active": false`.
-Vous pouvez aussi préciser des critères de filtrage :
 
-- `"age": ["lt1","1to2",... ]` — ancienneté de thèse acceptée
-- `"stat": ["assoc","funded","indep","mcf"]` — statut requis
-- `"specs": ["bioarch","prehist",...]` — spécialités ciblées
 ### Valeurs de `country`
 
 `france` · `de` · `uk` · `nl` · `ch` · `at` · `other_eu` · `intl`
