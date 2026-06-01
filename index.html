@@ -28,6 +28,7 @@ h1 em{font-style:italic;color:var(--gold)}
 
 /* TABS */
 .tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:36px}
+#tabsBar{display:none}
 .tab{font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;padding:12px 24px;border:none;background:none;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s}
 .tab:hover{color:var(--ink)}
 .tab.active{color:var(--ink);border-bottom-color:var(--gold)}
@@ -181,8 +182,8 @@ h1 em{font-style:italic;color:var(--gold)}
   <p class="updated" id="updatedLine"></p>
 </header>
 
-<div id="appSection" style="display:none">
 <!-- TABS -->
+<div id="tabsBar">
 <div class="tabs">
   <button class="tab active" onclick="switchTab('grants',this)">Bourses & Appels <span class="tab-badge" id="badge-grants">—</span></button>
   <button class="tab" onclick="switchTab('jobs',this)">Offres Postdoc <span class="tab-badge" id="badge-jobs">—</span></button>
@@ -193,7 +194,6 @@ h1 em{font-style:italic;color:var(--gold)}
 ═══════════════════════════════════ -->
 <div class="panel active" id="panel-grants">
 
-<div id="wizardSection">
 <div class="progress-bar"><div class="progress-fill" id="pf" style="width:0%"></div></div>
 
 <div id="wizard">
@@ -337,7 +337,6 @@ h1 em{font-style:italic;color:var(--gold)}
 </div>
 
 </div><!-- /wizard -->
-</div><!-- /wizardSection -->
 
 <!-- RESULTS -->
 <div id="results" style="display:none">
@@ -458,8 +457,6 @@ h1 em{font-style:italic;color:var(--gold)}
   </div>
 
 </div><!-- /panel-jobs -->
-
-</div><!-- /appSection -->
 
 </div><!-- /main -->
 </div><!-- /app -->
@@ -627,8 +624,8 @@ function go(){
     return true;
   });
 
-  document.getElementById('wizardSection').style.display='none';
-  document.getElementById('appSection').style.display='block';
+  document.getElementById('wizard').style.display='none';
+  document.getElementById('tabsBar').style.display='block';
   document.getElementById('results').style.display='block';
   document.getElementById('pf').style.width='100%';
   window.scrollTo({top:0,behavior:'smooth'});
@@ -656,6 +653,7 @@ function go(){
   document.getElementById('pChips').innerHTML=chips.filter(Boolean).map(c=>`<span class="pch">${c}</span>`).join('');
 
   render('all');
+  renderJobs('all');
 }
 
 const ZL={france:'France',europe_occ:'Europe occ.',europe_orient:'Europe orient.',med:'Méditerranée',afrique_nord:'Afrique N.',afrique_ss:'Afrique ss.',asie_sud:'Asie du Sud',asie_se:'Asie du Sud-Est',asie_e:"Asie de l'Est",asie_c:'Asie centrale',ameriques:'Amériques',oceanie:'Océanie'};
@@ -760,8 +758,8 @@ function restart(){
   document.querySelectorAll('input[type=radio]').forEach(i=>i.checked=false);
   document.querySelectorAll('.ci').forEach(i=>i.classList.remove('on'));
   document.querySelectorAll('.tag-opt').forEach(t=>t.classList.remove('sel'));
-  document.getElementById('wizardSection').style.display='block';
-  document.getElementById('appSection').style.display='none';
+  document.getElementById('wizard').style.display='block';
+  document.getElementById('tabsBar').style.display='none';
   document.getElementById('results').style.display='none';
   document.getElementById('mcfBox').style.display='none';
   document.getElementById('jobProfileNote').style.display='none';
