@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GrantMatch — Archéologie & SHS</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#1a1612;--paper:#f5f0e8;--cream:#ede7d6;--gold:#c9952a;--gold-l:#e8b84b;--rust:#a84632;--sage:#4a6741;--slate:#3d4f5c;--muted:#8a7e6e;--border:#d4c8b0;--sh:rgba(26,22,18,.1)}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 10%,rgba(201,149,42,.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 90%,rgba(74,103,65,.05) 0%,transparent 50%);pointer-events:none;z-index:0}
+.app{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:0 20px 80px}
+
+/* LOADING */
+#loading{text-align:center;padding:80px 20px;color:var(--muted);font-family:'DM Mono',monospace;font-size:.85rem}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 20px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* HEADER */
+header{text-align:center;padding:48px 0 32px;border-bottom:2px solid var(--border);margin-bottom:36px;position:relative}
+header::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:80px;height:3px;background:var(--gold)}
+.eyebrow{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3rem);font-weight:900;line-height:1.05;letter-spacing:-.02em}
+h1 em{font-style:italic;color:var(--gold)}
+.sub{margin-top:12px;font-size:.88rem;color:var(--muted);max-width:520px;margin-left:auto;margin-right:auto;line-height:1.65}
+.updated{margin-top:8px;font-family:'DM Mono',monospace;font-size:.6rem;color:var(--border);letter-spacing:.05em}
+
+/* TABS */
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:36px}
+#tabsBar{display:none}
+.tab{font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;padding:12px 24px;border:none;background:none;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--ink);border-bottom-color:var(--gold)}
+.tab-badge{display:inline-block;background:var(--cream);border-radius:10px;font-size:.6rem;padding:1px 6px;margin-left:5px;font-family:'DM Mono',monospace;color:var(--muted)}
+.tab.active .tab-badge{background:var(--gold);color:white}
+
+/* PANEL */
+.panel{display:none}.panel.active{display:block}
+
+/* PROGRESS */
+.progress-bar{height:3px;background:var(--border);border-radius:2px;margin-bottom:36px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-l));border-radius:2px;transition:width .4s ease}
+
+/* STEP */
+.step{display:none;animation:stepIn .3s ease both}
+.step.active{display:block}
+@keyframes stepIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.step-hd{display:flex;align-items:baseline;gap:12px;margin-bottom:22px}
+.step-n{font-family:'Playfair Display',serif;font-size:2.8rem;font-weight:900;color:var(--border);line-height:1;flex-shrink:0}
+.step-t{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;line-height:1.25;color:var(--ink)}
+.step-hint{font-size:.76rem;color:var(--muted);margin-top:3px;line-height:1.5}
+
+/* CHOICES */
+.choices{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-bottom:24px}
+.choices.c2{grid-template-columns:repeat(2,1fr)}.choices.c1{grid-template-columns:1fr}.choices.c3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:560px){.choices.c3,.choices.c2{grid-template-columns:1fr 1fr}}
+.choice{position:relative;cursor:pointer}
+.choice input{position:absolute;opacity:0;pointer-events:none}
+.cl{display:flex;flex-direction:column;gap:3px;padding:12px 15px;border:1.5px solid var(--border);border-radius:8px;background:white;cursor:pointer;transition:all .16s;box-shadow:0 1px 3px var(--sh)}
+.cl:hover{border-color:var(--gold);box-shadow:0 3px 10px rgba(201,149,42,.13);transform:translateY(-1px)}
+.choice input:checked+.cl{border-color:var(--gold);background:linear-gradient(135deg,#fffbf2,#fff8e8);box-shadow:0 0 0 2px rgba(201,149,42,.2)}
+.cm{font-size:.85rem;font-weight:600;color:var(--ink);line-height:1.3}
+.cs{font-size:.68rem;color:var(--muted);line-height:1.4}
+.choice input:checked+.cl .cm{color:var(--gold)}
+
+/* TAG GRID */
+.tag-grid{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:24px}
+.tag-opt{cursor:pointer;padding:7px 15px;border:1.5px solid var(--border);border-radius:20px;font-size:.8rem;font-weight:500;background:white;transition:all .14s;user-select:none}
+.tag-opt:hover{border-color:var(--gold)}
+.tag-opt.sel{background:var(--ink);border-color:var(--ink);color:white}
+
+/* CHECK GROUP */
+.cg{display:flex;flex-direction:column;gap:6px;margin-bottom:24px}
+.ci{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;background:white;cursor:pointer;transition:all .13s}
+.ci:hover{border-color:var(--gold)}.ci.on{border-color:var(--gold);background:linear-gradient(135deg,#fffbf2,#fff8e8)}
+.cb{width:16px;height:16px;border:2px solid var(--border);border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .13s;margin-top:2px}
+.ci.on .cb{background:var(--gold);border-color:var(--gold)}
+.cb::after{content:'✓';font-size:.65rem;color:white;display:none}.ci.on .cb::after{display:block}
+.ct{flex:1}.ctm{font-size:.84rem;font-weight:500;line-height:1.3}.cts{font-size:.68rem;color:var(--muted);margin-top:2px}
+
+/* BUTTONS */
+.btn-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn{font-family:'DM Sans',sans-serif;font-weight:600;font-size:.84rem;padding:10px 24px;border-radius:6px;border:none;cursor:pointer;transition:all .16s}
+.btn-p{background:var(--ink);color:var(--paper)}.btn-p:hover{background:var(--slate);transform:translateY(-1px);box-shadow:0 4px 12px rgba(26,22,18,.16)}
+.btn-g{background:var(--gold);color:white}.btn-g:hover{background:var(--gold-l);transform:translateY(-1px)}
+.btn-gh{background:transparent;color:var(--muted);border:1.5px solid var(--border)}.btn-gh:hover{border-color:var(--muted);color:var(--ink)}
+
+/* RESULTS */
+.rh{text-align:center;padding:28px 0 22px;border-bottom:2px solid var(--border);margin-bottom:28px;position:relative}
+.rh::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:56px;height:3px;background:var(--sage)}
+.rt{font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:700;color:var(--ink)}
+.rc{display:inline-block;margin-top:8px;font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);letter-spacing:.08em}
+.ics-bar{display:flex;align-items:center;gap:12px;padding:14px 18px;background:linear-gradient(90deg,rgba(74,103,65,.06),transparent);border:1.5px solid rgba(74,103,65,.2);border-radius:10px;margin-bottom:24px;flex-wrap:wrap}
+.ics-bar p{font-size:.78rem;color:var(--slate);flex:1;line-height:1.5}
+.rf{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+.rfb{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.05em;padding:4px 11px;border-radius:20px;border:1.5px solid var(--border);background:white;color:var(--muted);cursor:pointer;transition:all .13s}
+.rfb.active,.rfb:hover{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+
+/* GRANT / JOB CARD */
+.gc{background:white;border:1.5px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden;box-shadow:0 2px 8px var(--sh);transition:transform .18s,box-shadow .18s}
+.gc:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(26,22,18,.08)}
+.gc.p1{border-left:4px solid var(--gold)}.gc.p2{border-left:4px solid var(--sage)}.gc.p3{border-left:4px solid var(--slate)}
+.gc.job-card{border-left:4px solid var(--slate)}
+.gt{padding:16px 20px 12px;display:flex;gap:12px;align-items:flex-start}
+.gfl{font-size:1.45rem;flex-shrink:0;line-height:1;margin-top:2px}
+.gm{flex:1;min-width:0}
+.gbs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px}
+.bdg{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.07em;text-transform:uppercase;padding:2px 6px;border-radius:3px;font-weight:500}
+.bu{background:rgba(168,70,50,.1);color:var(--rust);border:1px solid rgba(168,70,50,.22)}
+.bo{background:rgba(74,103,65,.1);color:var(--sage);border:1px solid rgba(74,103,65,.22)}
+.bup{background:rgba(201,149,42,.1);color:var(--gold);border:1px solid rgba(201,149,42,.22)}
+.bsl{background:rgba(61,79,92,.1);color:var(--slate);border:1px solid rgba(61,79,92,.18)}
+.bjob{background:rgba(61,79,92,.12);color:var(--slate);border:1px solid rgba(61,79,92,.25)}
+.gn{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--ink);line-height:1.3;margin-bottom:2px}
+.gn a{color:inherit;text-decoration:none;border-bottom:1px dotted var(--gold)}.gn a:hover{color:var(--gold)}
+.go{font-size:.68rem;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:.03em}
+.ga{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--gold);margin-top:8px}
+.gdr{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap}
+.gdl{font-size:.66rem;color:var(--muted)}.gdv{font-family:'DM Mono',monospace;font-size:.7rem;font-weight:500;color:var(--ink)}
+.cp{font-family:'DM Mono',monospace;font-size:.64rem;padding:2px 7px;border-radius:4px;font-weight:500}
+.cpu{background:rgba(168,70,50,.1);color:var(--rust)}.cpo{background:rgba(74,103,65,.1);color:var(--sage)}.cpup{background:rgba(201,149,42,.1);color:var(--gold)}
+.warn-box{margin-top:7px;padding:5px 9px;background:rgba(168,70,50,.06);border:1px solid rgba(168,70,50,.2);border-radius:5px;font-size:.66rem;color:var(--rust);line-height:1.5}
+.gtog{display:flex;align-items:center;gap:6px;padding:8px 20px;background:none;border:none;border-top:1px solid var(--border);width:100%;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.7rem;color:var(--muted);transition:color .13s,background .13s;text-align:left}
+.gtog:hover{color:var(--ink);background:rgba(0,0,0,.015)}
+.tarr{transition:transform .22s}.gtog.open .tarr{transform:rotate(180deg)}
+.gexp{overflow:hidden;max-height:0;transition:max-height .32s ease}
+.gexp.open{max-height:600px}
+.gin{padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:560px){.gin{grid-template-columns:1fr}}
+.gst{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.gnote{font-size:.75rem;color:var(--ink);line-height:1.65}
+.dl{list-style:none}
+.dl li{font-size:.72rem;color:var(--slate);padding:3px 0 3px 13px;position:relative;line-height:1.45;border-bottom:1px dotted var(--border)}
+.dl li:last-child{border:none}.dl li::before{content:'—';position:absolute;left:0;color:var(--gold);font-weight:700}
+
+/* JOBS TAB */
+.jobs-intro{background:white;border:1.5px solid var(--border);border-radius:10px;padding:18px 20px;margin-bottom:24px;font-size:.82rem;color:var(--slate);line-height:1.65}
+.jobs-intro strong{color:var(--ink)}
+.jobs-intro a{color:var(--gold);text-decoration:none;border-bottom:1px dotted var(--gold)}
+.jobs-filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:20px}
+.job-empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:.85rem}
+
+/* PROFILE CHIPS */
+.pchips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:18px}
+.pch{font-family:'DM Mono',monospace;font-size:.58rem;padding:3px 8px;background:var(--cream);border:1px solid var(--border);border-radius:20px;color:var(--slate)}
+
+/* NO RESULTS */
+.no-res{text-align:center;padding:48px 20px;color:var(--muted)}
+.no-res .ico{font-size:2.6rem;margin-bottom:12px}
+.restart-bar{text-align:center;margin-top:40px;padding-top:26px;border-top:1px solid var(--border)}
+.restart-bar p{font-size:.76rem;color:var(--muted);margin-bottom:10px}
+
+/* SUBMIT FORM */
+.submit-section{margin-top:36px;border-top:2px solid var(--border);padding-top:28px}
+.submit-section h3{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;margin-bottom:8px}
+.submit-section p{font-size:.8rem;color:var(--muted);line-height:1.6;margin-bottom:16px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+@media(max-width:560px){.form-grid{grid-template-columns:1fr}}
+.form-field{display:flex;flex-direction:column;gap:4px}
+.form-field.full{grid-column:1/-1}
+.form-field label{font-size:.7rem;font-weight:600;color:var(--ink);font-family:'DM Mono',monospace;letter-spacing:.04em;text-transform:uppercase}
+.form-field input,.form-field select,.form-field textarea{padding:9px 12px;border:1.5px solid var(--border);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:.82rem;background:white;color:var(--ink);transition:border-color .14s}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{outline:none;border-color:var(--gold)}
+.form-field textarea{resize:vertical;min-height:80px}
+.form-hint{font-size:.65rem;color:var(--muted);margin-top:2px}
+.copy-box{background:var(--cream);border:1.5px solid var(--border);border-radius:8px;padding:14px 16px;font-family:'DM Mono',monospace;font-size:.68rem;color:var(--slate);white-space:pre-wrap;line-height:1.7;margin-top:12px;display:none}
+.copy-box.show{display:block}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div id="loading"><div class="spinner"></div>Chargement des données…</div>
+
+<div id="main" style="display:none">
+
+<header>
+  <p class="eyebrow">Outil de recherche de financements</p>
+  <h1>Grant<em>Match</em></h1>
+  <p class="sub">Archéologie & Sciences Humaines — Bourses institutionnelles et offres postdoc adaptées à votre profil.</p>
+  <p class="updated" id="updatedLine"></p>
+</header>
+
+<div id="wizardSection">
+<div class="progress-bar"><div class="progress-fill" id="pf" style="width:0%"></div></div>
+
+<div id="wizard">
+
+<!-- S1: ancienneté thèse -->
+<div class="step active" id="s1">
+  <div class="step-hd"><span class="step-n">01</span><div><div class="step-t">Depuis combien de temps votre thèse est-elle soutenue ?</div><div class="step-hint">La plupart des bourses postdoctorales imposent une limite d'ancienneté.</div></div></div>
+  <div class="choices">
+    <label class="choice"><input type="radio" name="q_age" value="lt1"><div class="cl"><span class="cm">Moins d'1 an</span><span class="cs">Thèse très récente</span></div></label>
+    <label class="choice"><input type="radio" name="q_age" value="1to2"><div class="cl"><span class="cm">1 à 2 ans</span></div></label>
+    <label class="choice"><input type="radio" name="q_age" value="2to4"><div class="cl"><span class="cm">2 à 4 ans</span></div></label>
+    <label class="choice"><input type="radio" name="q_age" value="4to6"><div class="cl"><span class="cm">4 à 6 ans</span></div></label>
+    <label class="choice"><input type="radio" name="q_age" value="6to10"><div class="cl"><span class="cm">6 à 10 ans</span></div></label>
+    <label class="choice"><input type="radio" name="q_age" value="gt10"><div class="cl"><span class="cm">Plus de 10 ans</span></div></label>
+  </div>
+  <div class="btn-row"><button class="btn btn-p" onclick="nxt(1)">Continuer →</button></div>
+</div>
+
+<!-- S2: pays thèse -->
+<div class="step" id="s2">
+  <div class="step-hd"><span class="step-n">02</span><div><div class="step-t">Dans quel pays avez-vous soutenu votre thèse ?</div><div class="step-hint">Conditionne l'accès à certains programmes (JSPS, Rubicon, Leverhulme…).</div></div></div>
+  <div class="choices c3">
+    <label class="choice"><input type="radio" name="q_cty" value="fr"><div class="cl"><span class="cm">🇫🇷 France</span></div></label>
+    <label class="choice"><input type="radio" name="q_cty" value="de"><div class="cl"><span class="cm">🇩🇪 Allemagne</span></div></label>
+    <label class="choice"><input type="radio" name="q_cty" value="uk"><div class="cl"><span class="cm">🇬🇧 Royaume-Uni</span></div></label>
+    <label class="choice"><input type="radio" name="q_cty" value="nl"><div class="cl"><span class="cm">🇳🇱 Pays-Bas</span></div></label>
+    <label class="choice"><input type="radio" name="q_cty" value="ch"><div class="cl"><span class="cm">🇨🇭 Suisse</span></div></label>
+    <label class="choice"><input type="radio" name="q_cty" value="at"><div class="cl"><span class="cm">🇦🇹 Autriche</span></div></label>
+    <label class="choice"><input type="radio" name="q_cty" value="other_eu"><div class="cl"><span class="cm">🇪🇺 Autre pays UE</span></div></label>
+    <label class="choice"><input type="radio" name="q_cty" value="non_eu"><div class="cl"><span class="cm">🌍 Hors Europe</span></div></label>
+  </div>
+  <div class="btn-row"><button class="btn btn-gh" onclick="prv(2)">← Retour</button><button class="btn btn-p" onclick="nxt(2)">Continuer →</button></div>
+</div>
+
+<!-- S3: statut -->
+<div class="step" id="s3">
+  <div class="step-hd"><span class="step-n">03</span><div><div class="step-t">Quelle est votre situation institutionnelle actuelle ?</div><div class="step-hint">Votre statut conditionne certains appels (ex. ANR JCJC).</div></div></div>
+  <div class="choices c1">
+    <label class="choice"><input type="radio" name="q_stat" value="assoc"><div class="cl"><span class="cm">Postdoc associé(e) non financé(e)</span><span class="cs">Rattaché(e) à un labo (UMR, EA…) sans contrat salarié</span></div></label>
+    <label class="choice"><input type="radio" name="q_stat" value="funded"><div class="cl"><span class="cm">Postdoc avec contrat (CDD ou CDI)</span><span class="cs">Salarié(e) dans un labo ou une institution</span></div></label>
+    <label class="choice"><input type="radio" name="q_stat" value="indep"><div class="cl"><span class="cm">Chercheur(se) indépendant(e)</span><span class="cs">Sans affiliation institutionnelle</span></div></label>
+    <label class="choice"><input type="radio" name="q_stat" value="mcf"><div class="cl"><span class="cm">Enseignant-chercheur (MCF, lecturer…)</span><span class="cs">Poste permanent ou équivalent</span></div></label>
+  </div>
+  <div class="btn-row"><button class="btn btn-gh" onclick="prv(3)">← Retour</button><button class="btn btn-p" onclick="nxt(3)">Continuer →</button></div>
+</div>
+
+<!-- S4: spécialité -->
+<div class="step" id="s4">
+  <div class="step-hd"><span class="step-n">04</span><div><div class="step-t">Quelle est votre spécialité archéologique ?</div><div class="step-hint">Sélectionnez tout ce qui correspond. Vous pouvez ne rien sélectionner.</div></div></div>
+  <div class="tag-grid" id="tg_spec">
+    <div class="tag-opt" data-v="prehist">Préhistoire</div>
+    <div class="tag-opt" data-v="protohistoire">Protohistoire</div>
+    <div class="tag-opt" data-v="antiquite">Antiquité classique</div>
+    <div class="tag-opt" data-v="bioarch">Bioarchéologie</div>
+    <div class="tag-opt" data-v="archeo_mort">Archéologie funéraire</div>
+    <div class="tag-opt" data-v="paleogenom">Paléogénomique / ADN ancien</div>
+    <div class="tag-opt" data-v="medieval">Archéologie médiévale</div>
+    <div class="tag-opt" data-v="anthropo">Anthropologie / Ethnoarchéologie</div>
+    <div class="tag-opt" data-v="archeo_env">Archéologie environnementale</div>
+    <div class="tag-opt" data-v="archeo_sci">Archéométrie / Sciences du patrimoine</div>
+    <div class="tag-opt" data-v="numismat">Numismatique / Épigraphie</div>
+    <div class="tag-opt" data-v="histoire_art">Histoire de l'art / Iconographie</div>
+    <div class="tag-opt" data-v="autre_shs">Autre SHS</div>
+  </div>
+  <div class="btn-row"><button class="btn btn-gh" onclick="prv(4)">← Retour</button><button class="btn btn-p" onclick="nxt(4)">Continuer →</button></div>
+</div>
+
+<!-- S5: zone géo -->
+<div class="step" id="s5">
+  <div class="step-hd"><span class="step-n">05</span><div><div class="step-t">Quelle(s) zone(s) géographique(s) de recherche ?</div><div class="step-hint">Sélectionnez toutes les zones concernées — active des financeurs spécialisés.</div></div></div>
+  <div class="tag-grid" id="tg_zone">
+    <div class="tag-opt" data-v="france">France / Territoire national</div>
+    <div class="tag-opt" data-v="europe_occ">Europe occidentale</div>
+    <div class="tag-opt" data-v="europe_orient">Europe orientale / Balkans</div>
+    <div class="tag-opt" data-v="med">Méditerranée / Proche-Orient</div>
+    <div class="tag-opt" data-v="afrique_nord">Afrique du Nord / Égypte</div>
+    <div class="tag-opt" data-v="afrique_ss">Afrique subsaharienne</div>
+    <div class="tag-opt" data-v="asie_sud">Asie du Sud (Inde, Sri Lanka…)</div>
+    <div class="tag-opt" data-v="asie_se">Asie du Sud-Est</div>
+    <div class="tag-opt" data-v="asie_e">Asie de l'Est (Chine, Japon, Corée)</div>
+    <div class="tag-opt" data-v="asie_c">Asie centrale</div>
+    <div class="tag-opt" data-v="ameriques">Amériques</div>
+    <div class="tag-opt" data-v="oceanie">Océanie / Pacifique</div>
+  </div>
+  <div class="btn-row"><button class="btn btn-gh" onclick="prv(5)">← Retour</button><button class="btn btn-p" onclick="nxt(5)">Continuer →</button></div>
+</div>
+
+<!-- S6: publication thèse -->
+<div class="step" id="s6">
+  <div class="step-hd"><span class="step-n">06</span><div><div class="step-t">Votre thèse est-elle publiée en monographie ?</div><div class="step-hint">Certaines fondations (ex. Gerda Henkel) exigent une publication chez un éditeur — un dépôt institutionnel ne suffit pas.</div></div></div>
+  <div class="choices">
+    <label class="choice"><input type="radio" name="q_mono" value="yes"><div class="cl"><span class="cm">✅ Oui, chez un éditeur</span><span class="cs">Imprimé ou numérique (OpenEdition, Archaeopress…)</span></div></label>
+    <label class="choice"><input type="radio" name="q_mono" value="repo"><div class="cl"><span class="cm">📂 Dépôt institutionnel</span><span class="cs">theses.fr, HAL, dépôt universitaire…</span></div></label>
+    <label class="choice"><input type="radio" name="q_mono" value="inprog"><div class="cl"><span class="cm">📝 En cours de publication</span><span class="cs">Contrat signé ou soumis</span></div></label>
+    <label class="choice"><input type="radio" name="q_mono" value="no"><div class="cl"><span class="cm">❌ Non publiée</span></div></label>
+  </div>
+  <div class="btn-row"><button class="btn btn-gh" onclick="prv(6)">← Retour</button><button class="btn btn-p" onclick="nxt(6)">Continuer →</button></div>
+</div>
+
+<!-- S7: liens institutionnels -->
+<div class="step" id="s7">
+  <div class="step-hd"><span class="step-n">07</span><div><div class="step-t">Avez-vous des liens avec ces systèmes de recherche ?</div><div class="step-hint">Même des collaborations informelles peuvent ouvrir des droits.</div></div></div>
+  <div class="cg">
+    <div class="ci" onclick="tc(this,'l_de')"><div class="cb"></div><div class="ct"><div class="ctm">🇩🇪 Lien avec la recherche allemande</div><div class="cts">Collaboration, co-publication, séjour dans une institution allemande</div></div></div>
+    <div class="ci" onclick="tc(this,'l_uk')"><div class="cb"></div><div class="ct"><div class="ctm">🇬🇧 Diplôme ou poste au Royaume-Uni</div></div></div>
+    <div class="ci" onclick="tc(this,'l_nl')"><div class="cb"></div><div class="ct"><div class="ctm">🇳🇱 PhD ou partenaire aux Pays-Bas</div></div></div>
+    <div class="ci" onclick="tc(this,'l_ch')"><div class="cb"></div><div class="ct"><div class="ctm">🇨🇭 Travail en Suisse (≥ 2 ans)</div></div></div>
+    <div class="ci" onclick="tc(this,'l_at')"><div class="cb"></div><div class="ct"><div class="ctm">🇦🇹 Mentor potentiel en Autriche</div><div class="cts">Contact pouvant être mentor FWF ESPRIT</div></div></div>
+    <div class="ci" onclick="tc(this,'l_jp')"><div class="cb"></div><div class="ct"><div class="ctm">🇯🇵 Partenaire de recherche au Japon</div><div class="cts">Contact pouvant rédiger une lettre d'invitation JSPS</div></div></div>
+    <div class="ci" onclick="tc(this,'l_efeo')"><div class="cb"></div><div class="ct"><div class="ctm">EFEO — collaboration existante</div><div class="cts">Co-travaux avec des chercheurs de l'École française d'Extrême-Orient</div></div></div>
+  </div>
+  <div class="btn-row"><button class="btn btn-gh" onclick="prv(7)">← Retour</button><button class="btn btn-p" onclick="nxt(7)">Continuer →</button></div>
+</div>
+
+<!-- S8: financements déjà obtenus -->
+<!-- S8-MCF: qualification MCF ? -->
+<div class="step" id="s8">
+  <div class="step-hd"><span class="step-n">08</span><div><div class="step-t">Avez-vous la qualification MCF ou un équivalent permanent ?</div><div class="step-hint">Si oui, des liens vers les postes permanents (Galaxie CNU 20/21/22, CNRS, IRD…) s'ajouteront à vos résultats.</div></div></div>
+  <div class="choices c2">
+    <label class="choice"><input type="radio" name="q_mcf" value="yes"><div class="cl"><span class="cm">✅ Oui, qualifié(e)</span><span class="cs">MCF sections 20/21/22, ou équivalent international</span></div></label>
+    <label class="choice"><input type="radio" name="q_mcf" value="no"><div class="cl"><span class="cm">Non / Pas encore</span><span class="cs">Je cherche un postdoc ou contrat temporaire</span></div></label>
+  </div>
+  <div class="btn-row"><button class="btn btn-gh" onclick="prv(8)">← Retour</button><button class="btn btn-p" onclick="nxt(8)">Continuer →</button></div>
+</div>
+
+<div class="step" id="s9">
+  <div class="step-hd"><span class="step-n">09</span><div><div class="step-t">Avez-vous déjà bénéficié de ces financements ?</div><div class="step-hint">Pour ne pas vous suggérer des bourses non renouvelables déjà perçues.</div></div></div>
+  <div class="cg">
+    <div class="ci" onclick="tc(this,'h_msca')"><div class="cb"></div><div class="ct"><div class="ctm">MSCA Postdoctoral Fellowship</div></div></div>
+    <div class="ci" onclick="tc(this,'h_anr_access')"><div class="cb"></div><div class="ct"><div class="ctm">ANR Access ERC</div></div></div>
+    <div class="ci" onclick="tc(this,'h_wenner')"><div class="cb"></div><div class="ct"><div class="ctm">Wenner-Gren (Post-PhD Grant ou Hunt Fellowship)</div></div></div>
+    <div class="ci" onclick="tc(this,'h_fyssen')"><div class="cb"></div><div class="ct"><div class="ctm">Fondation Fyssen</div></div></div>
+    <div class="ci" onclick="tc(this,'h_gerda')"><div class="cb"></div><div class="ct"><div class="ctm">Gerda Henkel Stiftung</div></div></div>
+    <div class="ci" onclick="tc(this,'h_mqb')"><div class="cb"></div><div class="ct"><div class="ctm">Musée du Quai Branly — contrat postdoctoral</div></div></div>
+    <div class="ci" onclick="tc(this,'h_none')"><div class="cb"></div><div class="ct"><div class="ctm">✨ Aucun de ces financements</div></div></div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-gh" onclick="prv(9)">← Retour</button>
+    <button class="btn btn-g" onclick="go()">🔍 Voir mes financements →</button>
+  </div>
+</div>
+
+</div><!-- /wizard -->
+</div><!-- /wizardSection -->
+
+<!-- TABS -->
+<div id="tabsBar">
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('grants',this)">Bourses & Appels <span class="tab-badge" id="badge-grants">—</span></button>
+  <button class="tab" onclick="switchTab('jobs',this)">Offres Postdoc <span class="tab-badge" id="badge-jobs">—</span></button>
+</div>
+
+<!-- ═══════════════════════════════════
+     PANEL 1 — BOURSES
+═══════════════════════════════════ -->
+<div class="panel active" id="panel-grants">
+
+<!-- RESULTS -->
+<div id="results" style="display:none">
+  <div class="rh">
+    <div class="rt" id="rTitle"></div>
+    <div class="rc" id="rCount"></div>
+    <button class="btn btn-gh" onclick="restart()" style="margin-top:12px;font-size:.75rem;padding:7px 16px">✏️ Modifier mon profil</button>
+  </div>
+  <div id="mcfBox" style="display:none;margin-bottom:20px;padding:16px 20px;background:white;border:1.5px solid var(--border);border-radius:10px;border-left:4px solid var(--slate)">
+    <div style="font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--slate);margin-bottom:10px">🎓 Postes permanents — liens directs</div>
+    <div style="font-size:.78rem;color:var(--slate);line-height:1.8">
+      Avec la qualification MCF, consultez également :<br>
+      <a href="https://www.galaxie.enseignementsup-recherche.gouv.fr/ensup/cand_postes_MCF_table.htm" target="_blank" rel="noopener" style="color:var(--gold);border-bottom:1px dotted var(--gold)">🇫🇷 Galaxie — Postes MCF (sections 20, 21, 22)</a> &nbsp;·&nbsp;
+      <a href="https://emploi.cnrs.fr/Offres/Chercheur.aspx" target="_blank" rel="noopener" style="color:var(--gold);border-bottom:1px dotted var(--gold)">🇫🇷 Emploi CNRS — Chargés de recherche</a> &nbsp;·&nbsp;
+      <a href="https://www.ird.fr/les-concours-ird" target="_blank" rel="noopener" style="color:var(--gold);border-bottom:1px dotted var(--gold)">🇫🇷 Concours IRD</a><br>
+      <a href="https://www.fnrs.be/fr/financements/programmes/postes" target="_blank" rel="noopener" style="color:var(--gold);border-bottom:1px dotted var(--gold)">🇧🇪 FNRS — Postes de chercheur</a> &nbsp;·&nbsp;
+      <a href="https://www.jobs.ac.uk/search/?keywords=archaeology+lecturer" target="_blank" rel="noopener" style="color:var(--gold);border-bottom:1px dotted var(--gold)">🇬🇧 jobs.ac.uk — Lecturer in Archaeology</a> &nbsp;·&nbsp;
+      <a href="https://academicpositions.eu/jobs/archaeology" target="_blank" rel="noopener" style="color:var(--gold);border-bottom:1px dotted var(--gold)">🇪🇺 AcademicPositions.eu</a><br>
+      <a href="https://www.dainst.org/en/karriere" target="_blank" rel="noopener" style="color:var(--gold);border-bottom:1px dotted var(--gold)">🇩🇪 DAI — Carrières</a> &nbsp;·&nbsp;
+      <a href="https://academicjobs.fandom.com/wiki/Archaeology_2025-2026" target="_blank" rel="noopener" style="color:var(--gold);border-bottom:1px dotted var(--gold)">🌍 Academic Jobs Wiki Archaeology 2025-26</a>
+    </div>
+  </div>
+  <div class="pchips" id="pChips"></div>
+  <div class="ics-bar" id="icsBar" style="display:none">
+    <p><strong>📅 Exporter le calendrier</strong> — Fichier .ics avec rappels 6 semaines avant chaque deadline. Compatible Apple Calendar, Google Calendar, Outlook.</p>
+    <button class="btn btn-p" onclick="exportICS()" style="font-size:.76rem;padding:8px 14px">⬇ Fichier .ics</button>
+  </div>
+  <div class="rf">
+    <button class="rfb active" onclick="fr('all',this)">Tous</button>
+    <button class="rfb" onclick="fr('open',this)">🟢 Ouverts</button>
+    <button class="rfb" onclick="fr('upcoming',this)">🟡 À venir</button>
+    <button class="rfb" onclick="fr('p1',this)">⭐ Prioritaires</button>
+  </div>
+  <div id="gList"></div>
+  <div class="restart-bar">
+    <p>Modifier votre profil ?</p>
+    <button class="btn btn-gh" onclick="restart()">↩ Recommencer</button>
+  </div>
+</div>
+
+</div><!-- /panel-grants -->
+
+<!-- ═══════════════════════════════════
+     PANEL 2 — OFFRES POSTDOC
+═══════════════════════════════════ -->
+<div class="panel" id="panel-jobs">
+
+  <div class="jobs-intro">
+    <strong>Offres postdoc ponctuelles</strong> — annonces envoyées directement par des laboratoires, issues de listes de diffusion ou de Calenda.
+    Ces offres sont distinctes des bourses institutionnelles : elles proposent un <strong>poste salarié dans une équipe</strong> sur un projet précis.<br><br>
+    Pour signaler une nouvelle offre, utilisez le formulaire ci-dessous — le bloc JSON généré est à coller dans <code>jobs.json</code> sur GitHub.
+  </div>
+
+  <!-- Filtres jobs -->
+  <div class="jobs-filters">
+    <button class="rfb active" onclick="filterJobs('all',this)">Toutes les zones</button>
+    <button class="rfb" onclick="filterJobs('france',this)">🇫🇷 France</button>
+    <button class="rfb" onclick="filterJobs('europe',this)">🇪🇺 Europe</button>
+    <button class="rfb" onclick="filterJobs('intl',this)">🌍 International</button>
+  </div>
+
+  <div id="jobList"></div>
+
+  <!-- FORMULAIRE DE SIGNALEMENT -->
+  <div class="submit-section">
+    <h3>Signaler une offre postdoc</h3>
+    <p>Remplissez ce formulaire pour générer un bloc JSON prêt à copier dans <code>jobs.json</code>. Après avoir copié le bloc, allez sur GitHub → <code>jobs.json</code> → crayon → collez avant le dernier <code>]</code> → Commit.</p>
+
+    <div class="form-grid">
+      <div class="form-field full">
+        <label>Titre du poste *</label>
+        <input type="text" id="f_title" placeholder="ex. Postdoc en archéologie du Bronze Age – Univ. Lyon">
+      </div>
+      <div class="form-field">
+        <label>Laboratoire / Institution *</label>
+        <input type="text" id="f_lab" placeholder="ex. ArAr – UMR 5138, Lyon">
+      </div>
+      <div class="form-field">
+        <label>Pays</label>
+        <select id="f_country">
+          <option value="france">🇫🇷 France</option>
+          <option value="de">🇩🇪 Allemagne</option>
+          <option value="uk">🇬🇧 Royaume-Uni</option>
+          <option value="other_eu">🇪🇺 Autre Europe</option>
+          <option value="intl">🌍 Hors Europe</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Date limite candidature *</label>
+        <input type="date" id="f_deadline">
+      </div>
+      <div class="form-field">
+        <label>Durée du contrat</label>
+        <input type="text" id="f_duration" placeholder="ex. 24 mois">
+      </div>
+      <div class="form-field">
+        <label>Salaire / Montant</label>
+        <input type="text" id="f_salary" placeholder="ex. ~2 700 €/mois brut">
+      </div>
+      <div class="form-field">
+        <label>URL de l'annonce *</label>
+        <input type="url" id="f_url" placeholder="https://...">
+      </div>
+      <div class="form-field">
+        <label>Contact email</label>
+        <input type="email" id="f_contact" placeholder="recrutement@labo.fr">
+      </div>
+      <div class="form-field full">
+        <label>Description courte</label>
+        <textarea id="f_desc" placeholder="2-3 phrases résumant le projet, les profils recherchés, les missions…"></textarea>
+      </div>
+    </div>
+
+    <button class="btn btn-p" onclick="generateJSON()">⚙️ Générer le bloc JSON</button>
+
+    <div class="copy-box" id="copyBox"></div>
+    <button class="btn btn-gh" id="copyBtn" style="display:none;margin-top:8px" onclick="copyJSON()">📋 Copier</button>
+  </div>
+
+</div><!-- /panel-jobs -->
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+// ═══ GLOBALS ═══
+const TODAY = new Date();
+let GRANTS = [], JOBS = [], META = {};
+let P = {age:null,cty:null,stat:null,mono:null,specs:[],zones:[]};
+let CK = {};
+let matched = [];
+let curStep = 1;
+const TOTAL = 9;
+
+// ═══ LOAD DATA ═══
+async function loadData() {
+  // 1. grants.json — obligatoire
+  let gdata;
+  try {
+    const r = await fetch('grants.json?v='+Date.now());
+    gdata = await r.json();
+  } catch(e) {
+    document.getElementById('loading').innerHTML =
+      '<p style="color:#a84632;font-size:.85rem">⚠ Impossible de charger grants.json.<br><small>'+e+'</small></p>';
+    return;
+  }
+  GRANTS = gdata.grants || [];
+  META   = gdata.meta   || {};
+
+  // 2. jobs.json — optionnel
+  try {
+    const r = await fetch('jobs.json?v='+Date.now());
+    const jdata = await r.json();
+    JOBS = (jdata.jobs||[]).filter(j=>j.active!==false);
+  } catch(e) { JOBS = []; }
+
+  // 3. discovered.json — optionnel (offres auto)
+  try {
+    const r    = await fetch('discovered.json?v='+Date.now());
+    const disc = await r.json();
+    const seen = new Set(JOBS.map(j=>j.id));
+    for(const item of (disc.items||[]).filter(i=>i.active!==false)){
+      if(!seen.has(item.id)){
+        JOBS.push({
+          id:          item.id,
+          title:       item.title       || '',
+          lab:         item.lab         || item.source || '',
+          country:     item.country     || '',
+          flag:        item.flag        || '📋',
+          deadline:    item.deadline    || '2099-12-31',
+          salary:      item.salary      || null,
+          url:         item.url         || '',
+          description: item.summary     || '',
+          source:      (item.source||'')+(item.auto?' (auto)':''),
+          added:       item.published   || '',
+          active:      true,
+          auto:        !!item.auto,
+          type:        item.type        || 'postdoc',
+          zones:       item.zones       || [],
+          specs:       item.specs       || [],
+        });
+        seen.add(item.id);
+      }
+    }
+  } catch(e) {}
+
+  // 4. Afficher l'interface
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('main').style.display    = 'block';
+  if(META.last_updated) {
+    document.getElementById('updatedLine').textContent =
+      'Données mises à jour le ' +
+      new Date(META.last_updated).toLocaleDateString('fr-FR',
+        {day:'numeric',month:'long',year:'numeric'});
+  }
+  document.getElementById('badge-jobs').textContent = JOBS.length;
+  initTags();
+  renderJobs('all');
+}
+loadData();
+
+function initTags(){
+  document.querySelectorAll('.tag-grid').forEach(g=>
+    g.querySelectorAll('.tag-opt').forEach(t=>t.addEventListener('click',()=>t.classList.toggle('sel')))
+  );
+}
+
+// ═══ TABS ═══
+function switchTab(name,btn){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-'+name).classList.add('active');
+  if(name==='jobs') renderJobs('all');
+}
+
+// ═══ WIZARD ═══
+function gv(n){const e=document.querySelector(`input[name="${n}"]:checked`);return e?e.value:null;}
+function getTags(id){return[...document.querySelectorAll(`#${id} .tag-opt.sel`)].map(t=>t.dataset.v);}
+function tc(el,key){
+  el.classList.toggle('on');CK[key]=el.classList.contains('on');
+  if(key==='h_none'&&CK[key]){
+    Object.keys(CK).forEach(k=>{if(k!=='h_none'){CK[k]=false;
+      document.querySelectorAll('.ci').forEach(ci=>{const m=ci.getAttribute('onclick').match(/'([^']+)'/);if(m&&m[1]===k)ci.classList.remove('on');});}});
+  } else if(key!=='h_none'){
+    CK['h_none']=false;document.querySelectorAll('.ci[onclick*="h_none"]').forEach(ci=>ci.classList.remove('on'));
+  }
+}
+function showStep(n){
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById(`s${n}`);if(el){el.classList.add('active');curStep=n;}
+  document.getElementById('pf').style.width=((n-1)/(TOTAL-1)*100)+'%';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function nxt(from){
+  if(from===1){P.age=gv('q_age');if(!P.age){alert('Veuillez sélectionner une réponse.');return;}}
+  if(from===2){P.cty=gv('q_cty');if(!P.cty){alert('Veuillez sélectionner.');return;}}
+  if(from===3){P.stat=gv('q_stat');if(!P.stat){alert('Veuillez sélectionner.');return;}}
+  if(from===4){P.specs=getTags('tg_spec');}
+  if(from===5){P.zones=getTags('tg_zone');}
+  if(from===6){P.mono=gv('q_mono');if(!P.mono){alert('Veuillez sélectionner.');return;}}
+  if(from===7){P.l_de=!!CK['l_de'];P.l_uk=!!CK['l_uk'];P.l_nl=!!CK['l_nl'];P.l_ch=!!CK['l_ch'];P.l_at=!!CK['l_at'];P.l_jp=!!CK['l_jp'];P.l_efeo=!!CK['l_efeo'];}
+  if(from===8){P.mcf=gv('q_mcf');if(!P.mcf){alert('Veuillez sélectionner.');return;}}
+  showStep(from+1);
+}
+function prv(from){showStep(from-1);}
+
+// ═══ ELIGIBILITY ═══
+function isEligible(g){
+  const r=g.elig_rules||{};
+  if(r.phd&&!r.phd.includes('yes')) return false; // toujours yes maintenant
+  if(r.age&&!r.age.includes(P.age)) return false;
+  if(r.stat&&!r.stat.includes(P.stat)) return false;
+  if(r.mono_required&&P.mono!=='yes') return false;
+  if(r.exclude_if_had&&r.exclude_if_had.some(h=>CK[h])) return false;
+  if(r.links_required&&!r.links_required.every(l=>P[l])) return false;
+  if(r.cty_or_link){const ok=r.cty_or_link.cty.includes(P.cty)||P[r.cty_or_link.link];if(!ok)return false;}
+  if(r.cty_exclude&&r.cty_exclude.includes(P.cty)) return false;
+  if(r.link_exclude&&P[r.link_exclude]) return false;
+  if(r.zones_any&&r.zones_any.length>0){if(P.zones.length===0||!r.zones_any.some(z=>P.zones.includes(z)))return false;}
+  return true;
+}
+function getWarnings(g){
+  const r=g.elig_rules||{},w=[];
+  if(r.links_recommended&&!r.links_recommended.every(l=>P[l]))
+    w.push('Un partenaire dans une institution correspondante est recommandé');
+  if(P.cty==='fr'&&g.id==='msca')
+    w.push('Règle de mobilité à vérifier selon votre résidence récente en France');
+  if((P.mono==='repo'||P.mono==='inprog')&&r.mono_required)
+    w.push(P.mono==='repo'?'Dépôt institutionnel insuffisant — publication chez un éditeur requise'
+                          :'Publication en cours : éligible à la prochaine session si finalisée');
+  return w;
+}
+
+// ═══ COMPUTE RESULTS ═══
+function go(){
+  ['l_de','l_uk','l_nl','l_ch','l_at','l_jp','l_efeo'].forEach(k=>{if(P[k]===undefined)P[k]=false;});
+  if(!P.mcf) P.mcf='no';
+  if(!P.mcf) P.mcf='no';
+  ['h_msca','h_anr_access','h_wenner','h_fyssen','h_gerda','h_mqb'].forEach(k=>{if(CK[k]===undefined)CK[k]=false;});
+
+  matched=GRANTS.filter(g=>{
+    if(!isEligible(g))return false;
+    if(g.specs&&g.specs.length>0&&P.specs.length>0&&!g.specs.some(s=>P.specs.includes(s)))return false;
+    return true;
+  });
+
+  document.getElementById('wizardSection').style.display='none';
+  document.getElementById('tabsBar').style.display='block';
+  document.getElementById('results').style.display='block';
+  document.getElementById('pf').style.width='100%';
+  window.scrollTo({top:0,behavior:'smooth'});
+
+  const open=matched.filter(g=>['soon','open'].includes(gst(g.deadline))).length;
+  document.getElementById('rTitle').textContent=matched.length>0
+    ?`${matched.length} financement${matched.length>1?'s':''} accessible${matched.length>1?'s':''} pour votre profil`
+    :'Aucun financement direct trouvé pour ce profil';
+  document.getElementById('rCount').textContent=`${open} appel${open>1?'s':''} ouvert${open>1?'s':''} · ${matched.length} au total`;
+  document.getElementById('badge-grants').textContent=matched.length;
+  if(matched.length>0)document.getElementById('icsBar').style.display='flex';
+  document.getElementById('mcfBox').style.display=P.mcf==='yes'?'block':'none';
+  if(P.zones&&P.zones.length>0||P.specs&&P.specs.length>0)
+    document.getElementById('jobProfileNote').style.display='inline';
+  renderJobs('all');  // re-render jobs with new profile
+  if(P.mcf==='yes')document.getElementById('mcfBox').style.display='block';
+
+  const chips=[];
+  const AL={lt1:'PhD < 1 an','1to2':'PhD 1-2 ans','2to4':'PhD 2-4 ans','4to6':'PhD 4-6 ans','6to10':'PhD 6-10 ans',gt10:'PhD > 10 ans'};
+  const CL={fr:'🇫🇷 France',de:'🇩🇪 Allemagne',uk:'🇬🇧 UK',nl:'🇳🇱 Pays-Bas',ch:'🇨🇭 Suisse',at:'🇦🇹 Autriche',other_eu:'🇪🇺 Autre UE',non_eu:'🌍 Hors Europe'};
+  if(P.age)chips.push(AL[P.age]);
+  if(P.cty)chips.push(CL[P.cty]);
+  P.zones.slice(0,3).forEach(z=>chips.push(zL(z)));
+  P.specs.slice(0,2).forEach(s=>chips.push(spL(s)));
+  document.getElementById('pChips').innerHTML=chips.filter(Boolean).map(c=>`<span class="pch">${c}</span>`).join('');
+
+  render('all');
+  renderJobs('all');
+}
+
+const ZL={france:'France',europe_occ:'Europe occ.',europe_orient:'Europe orient.',med:'Méditerranée',afrique_nord:'Afrique N.',afrique_ss:'Afrique ss.',asie_sud:'Asie du Sud',asie_se:'Asie du Sud-Est',asie_e:"Asie de l'Est",asie_c:'Asie centrale',ameriques:'Amériques',oceanie:'Océanie'};
+const SPL={prehist:'Préhistoire',protohistoire:'Protohistoire',antiquite:'Antiquité',bioarch:'Bioarchéologie',archeo_mort:'Archéo. funéraire',paleogenom:'Paléogénomique',medieval:'Médiéval',anthropo:'Anthropologie',archeo_env:'Archéo. env.',archeo_sci:'Archéométrie',numismat:'Numismatique',histoire_art:"Hist. de l'art",autre_shs:'SHS'};
+function zL(z){return ZL[z]||z;}function spL(s){return SPL[s]||s;}
+
+function gst(d){
+  const dl=new Date(d);if(dl.getFullYear()===2099)return'open';
+  const n=Math.ceil((dl-TODAY)/864e5);
+  if(n<0)return'closed';if(n<=45)return'soon';if(n<=400)return'open';return'upcoming';
+}
+function fd(d){const dl=new Date(d);if(dl.getFullYear()===2099)return'Candidature continue';return dl.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});}
+function du(d){const dl=new Date(d);if(dl.getFullYear()===2099)return 999;return Math.ceil((dl-TODAY)/864e5);}
+function ct(d){const n=du(d);if(n===999)return'Continue';if(n<0)return'Fermé';if(n<=45)return`${n}j restants`;if(n<365)return`${n}j`;return`~${Math.ceil(n/30)} mois`;}
+function sc(s){return{soon:'bu',open:'bo',upcoming:'bup',closed:'bsl'}[s]||'bsl';}
+function sl(s){return{soon:'⚡ Urgent',open:'✓ Ouvert',upcoming:'◷ À venir',closed:'Fermé'}[s]||s;}
+function pc(s){return{soon:'cpu',open:'cpo',upcoming:'cpup'}[s]||'cpup';}
+
+function cardHTML(x, isJob=false){
+  const st=gst(x.deadline),w=isJob?[]:getWarnings(x);
+  const nameHtml=x.url?`<a href="${x.url}" target="_blank" rel="noopener">${x.name||x.title}</a>`:x.name||x.title;
+  const orgLine=isJob?(x.lab||x.org):(x.org||'');
+  const autoBadge=x.auto?'<span class="bdg" style="background:rgba(201,149,42,.08);color:var(--gold);border:1px solid rgba(201,149,42,.25);font-size:.5rem">⚠ Non vérifié</span>':'';
+
+  const plab={1:'⭐ Prioritaire',2:'Recommandé',3:'À explorer'};
+  const priorityBadge=!isJob?`<span class="bdg bsl">${plab[x.priority]||''}</span>`:'<span class="bdg bjob">Offre postdoc</span>';
+  const expandContent=isJob?`
+    <div class="gst">DESCRIPTION</div>
+    <div class="gnote">${x.description||'—'}</div>
+    ${x.contact?`<div style="margin-top:10px"><div class="gst">CONTACT</div><div class="gnote"><a href="mailto:${x.contact}">${x.contact}</a></div></div>`:''}
+  `:`
+    <div><div class="gst">À SAVOIR</div><div class="gnote">${x.note}</div></div>
+    <div><div class="gst">DOCUMENTS REQUIS</div><ul class="dl">${(x.docs||[]).map(d=>`<li>${d}</li>`).join('')}</ul></div>
+  `;
+  return`<div class="gc ${isJob?'job-card':'p'+(x.priority||3)}">
+<div class="gt"><div class="gfl">${x.flag||'📋'}</div><div class="gm">
+  <div class="gbs"><span class="bdg ${sc(st)}">${sl(st)}</span>${priorityBadge}${isJob?autoBadge:''}</div>
+  <div class="gn">${nameHtml}</div><div class="go">${orgLine}</div>
+  <div class="ga">${x.amount||x.salary||''}</div>
+  <div class="gdr"><span class="gdl">Clôture :</span><span class="gdv">${fd(x.deadline)}</span><span class="cp ${pc(st)}">${ct(x.deadline)}</span>
+  ${isJob&&x.duration?`<span style="font-family:var(--dm-mono);font-size:.66rem;color:var(--muted)">· ${x.duration}</span>`:''}
+  </div>
+  ${w.length?`<div class="warn-box">${w.map(ww=>`⚠ ${ww}`).join('<br>')}</div>`:''}
+</div></div>
+<button class="gtog" onclick="tog('${x.id}',this)"><span class="tarr">▾</span> Voir les détails</button>
+<div class="gexp" id="exp-${x.id}"><div class="gin ${isJob?'':''}">${expandContent}</div></div>
+</div>`;
+}
+
+function render(f){
+  let g=[...matched];
+  if(f==='open') g=g.filter(x=>['soon','open'].includes(gst(x.deadline)));
+  else if(f==='upcoming') g=g.filter(x=>gst(x.deadline)==='upcoming');
+  else if(f==='p1') g=g.filter(x=>x.priority===1);
+  const ord={soon:0,open:1,upcoming:2,closed:3};
+  g.sort((a,b)=>{const sa=gst(a.deadline),sb=gst(b.deadline);if(ord[sa]!==ord[sb])return ord[sa]-ord[sb];if(a.priority!==b.priority)return a.priority-b.priority;return new Date(a.deadline)-new Date(b.deadline);});
+  const list=document.getElementById('gList');
+  if(!g.length){list.innerHTML=`<div class="no-res"><div class="ico">🔍</div><p>Aucun résultat pour ce filtre.<br>Essayez "Tous".</p></div>`;return;}
+  list.innerHTML=g.map(x=>cardHTML(x,false)).join('');
+}
+
+// ═══ JOBS TAB ═══
+function renderJobs(filter){
+  const list=document.getElementById('jobList');
+  // base: non-expired (keep up to 30 days past deadline for visibility)
+  let jobs=[...JOBS].filter(j=>du(j.deadline)>-30);
+  // profile filter: if wizard was completed, filter by zones+specs
+  if(P.zones&&P.zones.length>0){
+    jobs=jobs.filter(j=>{
+      if(!j.zones||j.zones.length===0) return true; // no zone tag = show always
+      return j.zones.some(z=>P.zones.includes(z));
+    });
+  }
+  if(P.specs&&P.specs.length>0){
+    jobs=jobs.filter(j=>{
+      if(!j.specs||j.specs.length===0) return true;
+      return j.specs.some(s=>P.specs.includes(s));
+    });
+  }
+  // MCF filter
+  if(P.mcf==='no'){
+    jobs=jobs.filter(j=>j.type!=='mcf');
+  }
+  // geographic filter tab
+  if(filter==='france') jobs=jobs.filter(j=>j.country==='france');
+  else if(filter==='europe') jobs=jobs.filter(j=>['france','de','uk','other_eu','nl','ch','at'].includes(j.country));
+  else if(filter==='intl') jobs=jobs.filter(j=>!['france','de','uk','other_eu','nl','ch','at'].includes(j.country));
+  jobs.sort((a,b)=>new Date(a.deadline)-new Date(b.deadline));
+  if(!jobs.length){list.innerHTML=`<div class="job-empty">Aucune offre postdoc en cours.<br><span style="font-size:.75rem;color:var(--muted)">Utilisez le formulaire ci-dessous pour en signaler une.</span></div>`;return;}
+  list.innerHTML=jobs.map(j=>cardHTML(j,true)).join('');
+}
+function filterJobs(f,btn){
+  document.querySelectorAll('.jobs-filters .rfb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');renderJobs(f);
+}
+
+function tog(id,btn){const e=document.getElementById(`exp-${id}`);const o=e.classList.toggle('open');btn.classList.toggle('open',o);btn.childNodes[1].textContent=o?' Masquer':' Voir les détails';}
+function fr(f,btn){document.querySelectorAll('#panel-grants .rf .rfb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render(f);}
+
+function restart(){
+  P={age:null,cty:null,stat:null,mono:null,specs:[],zones:[]};CK={};matched=[];
+  document.querySelectorAll('input[type=radio]').forEach(i=>i.checked=false);
+  document.querySelectorAll('.ci').forEach(i=>i.classList.remove('on'));
+  document.querySelectorAll('.tag-opt').forEach(t=>t.classList.remove('sel'));
+  document.getElementById('wizardSection').style.display='block';
+  document.getElementById('tabsBar').style.display='none';
+  document.getElementById('results').style.display='none';
+  document.getElementById('mcfBox').style.display='none';
+  document.getElementById('jobProfileNote').style.display='none';
+  P.mcf='no'; renderJobs('all');
+  document.getElementById('badge-grants').textContent='—';
+  showStep(1);
+}
+
+// ═══ ICS EXPORT ═══
+function exportICS(){
+  const gs=matched.filter(g=>new Date(g.deadline).getFullYear()!==2099);
+  const stamp=new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+  const san=s=>(s||'').replace(/[,;\\]/g,'').replace(/\n/g,' ');
+  let ics='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//GrantMatch SHS//FR\r\nCALSCALE:GREGORIAN\r\nMETHOD:PUBLISH\r\nX-WR-CALNAME:GrantMatch — Mes Financements\r\n';
+  gs.forEach(g=>{
+    const d=new Date(g.deadline),ds=`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+    const al=new Date(d);al.setDate(al.getDate()-42);
+    const as=`${al.getFullYear()}${String(al.getMonth()+1).padStart(2,'0')}${String(al.getDate()).padStart(2,'0')}`;
+    ics+=`BEGIN:VEVENT\r\nUID:gm-${g.id}@shs\r\nDTSTAMP:${stamp}\r\nDTSTART;VALUE=DATE:${ds}\r\nDTEND;VALUE=DATE:${ds}\r\nSUMMARY:⏰ CLÔTURE — ${san(g.name)}\r\nDESCRIPTION:${san(g.org)} | ${san(g.amount)} | ${san(g.url||'')}\r\nCATEGORIES:Financement,SHS\r\nBEGIN:VALARM\r\nTRIGGER;VALUE=DATE-TIME:${as}T080000Z\r\nACTION:DISPLAY\r\nDESCRIPTION:⚠ Candidature dans 6 semaines — ${san(g.name)}\r\nEND:VALARM\r\nEND:VEVENT\r\n`;
+  });
+  ics+='END:VCALENDAR\r\n';
+  const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='grantmatch.ics';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
+// ═══ JOB FORM ═══
+function generateJSON(){
+  const title=document.getElementById('f_title').value.trim();
+  const lab=document.getElementById('f_lab').value.trim();
+  const deadline=document.getElementById('f_deadline').value;
+  const url=document.getElementById('f_url').value.trim();
+  if(!title||!lab||!deadline||!url){alert('Veuillez remplir au minimum : titre, laboratoire, date limite et URL.');return;}
+  const id='job_'+Date.now();
+  const obj={
+    id,title,lab,
+    country:document.getElementById('f_country').value,
+    flag:{france:'🇫🇷',de:'🇩🇪',uk:'🇬🇧',other_eu:'🇪🇺',intl:'🌍'}[document.getElementById('f_country').value]||'📋',
+    deadline,
+    duration:document.getElementById('f_duration').value.trim()||null,
+    salary:document.getElementById('f_salary').value.trim()||null,
+    zones:[],specs:[],url,
+    contact:document.getElementById('f_contact').value.trim()||null,
+    description:document.getElementById('f_desc').value.trim()||null,
+    source:'Manuel',
+    added:new Date().toISOString().split('T')[0],
+    active:true
+  };
+  // Nettoyer les nulls
+  Object.keys(obj).forEach(k=>{if(obj[k]===null||obj[k]==='')delete obj[k];});
+  const json=JSON.stringify(obj,null,2);
+  const box=document.getElementById('copyBox');
+  box.textContent=',\n'+json;
+  box.classList.add('show');
+  document.getElementById('copyBtn').style.display='inline-block';
+}
+function copyJSON(){
+  const text=document.getElementById('copyBox').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    document.getElementById('copyBtn').textContent='✅ Copié !';
+    setTimeout(()=>{document.getElementById('copyBtn').textContent='📋 Copier';},2000);
+  });
+}
+</script>
+</body>
+</html>
