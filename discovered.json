@@ -1,6 +1,65 @@
 {
-  "last_updated": "2026-05-29",
-  "last_checked": null,
-  "new_this_run": 0,
-  "items": []
+  "last_updated": "2026-06-01",
+  "last_checked": "2026-06-01",
+  "new_this_run": 3,
+  "items": [
+    {
+      "id": "156923a0e2",
+      "type": "postdoc",
+      "source": "Calenda – Bourses & emploi",
+      "country": "france",
+      "flag": "🇫🇷",
+      "title": "International Excellence in the Humanities Programme - Junior and Senior Research Fellowships 2027",
+      "url": "https://calenda.org/1393841",
+      "published": "2026-04-28",
+      "deadline": null,
+      "summary": "The International Excellence in the Humanities Fellowship Programme promotes academic diversity and interdisciplinarity and welcomes researchers with an international background to apply for post- doctoral fellowships at the MaCI. The Maison de la Création et de l’Innovation (MaCI), UGA’s International Center for the Humanities, is launching its annual Research Fellowship Programme. We offer 6 res",
+      "zones": [],
+      "specs": [],
+      "auto": true,
+      "validated": true,
+      "active": true
+    },
+    {
+      "id": "b55270131d",
+      "type": "postdoc",
+      "source": "Calenda – Archéologie",
+      "country": "france",
+      "flag": "🇫🇷",
+      "title": "Première conférence de la communauté de recherche en archéologie biomoléculaire et isotopique",
+      "url": "https://calenda.org/1376627",
+      "published": "2026-03-20",
+      "deadline": null,
+      "summary": "Depuis une dizaine d’années, le domaine des sciences archéologiques biomoléculaires connaît un essor remarquable, se traduisant par une diversification des approches (ADN ancien, biogéochimie isotopique, résidus organiques, paléoprotéomique, paléométabolomique, spectroscopie infra-rouge) et une multiplication des champs d’application — humains, animaux, végétaux, pathogènes ou encore sédiments.  F",
+      "zones": [
+        "france"
+      ],
+      "specs": [
+        "paleogenom",
+        "archeo_sci"
+      ],
+      "auto": true,
+      "validated": true,
+      "active": true
+    },
+    {
+      "id": "9657ac054a",
+      "type": "postdoc",
+      "source": "THE Jobs – Archaeology postdoc",
+      "country": "uk",
+      "flag": "🇬🇧",
+      "title": "UNIVERSITY OF VIENNA: University Assistant (Postdoctoral), Historical and Cultural Studies",
+      "url": "https://www.timeshighereducation.com/unijobs/listing/411197/university-assistant-postdoctoral-historical-and-cultural-studies-/?TrackID=8&utm_source=rss&utm_medium=feed&utm_campaign=general",
+      "published": "2026-05-19",
+      "deadline": null,
+      "summary": "The basic salary of EUR 5.014,30 (14 times a year):\n\nUNIVERSITY OF VIENNA:\nWe are seeking a University Assistant (postdoctoral) in the field of Greek Archaeology or Art.\nVienna (Landbezirke) (AT)",
+      "zones": [],
+      "specs": [
+        "antiquite"
+      ],
+      "auto": true,
+      "validated": true,
+      "active": true
+    }
+  ]
 }

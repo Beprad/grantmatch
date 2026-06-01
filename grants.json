@@ -1,6 +1,6 @@
 {
   "meta": {
-    "last_updated": "2026-05-28",
+    "last_updated": "2026-06-01",
     "version": "2.0"
   },
   "grants": [
@@ -9,7 +9,7 @@
       "name": "Gerda Henkel Stiftung — Research Scholarship (session mai)",
       "org": "Fondation Gerda Henkel · Allemagne",
       "flag": "🇩🇪",
-      "deadline": "2026-05-28",
+      "deadline": "2026-11-20",
       "amount": "2 760 €/mois · 1 à 24 mois",
       "priority": 1,
       "url": "https://www.gerda-henkel-stiftung.de/en/researchscholarships",
@@ -26,11 +26,23 @@
         "1 lettre de recommandation (uploadée par le référent via formulaire dédié)"
       ],
       "elig_rules": {
-        "phd": ["yes"],
-        "age": ["lt1","1to2","2to4","4to6","6to10"],
+        "phd": [
+          "yes"
+        ],
+        "age": [
+          "lt1",
+          "1to2",
+          "2to4",
+          "4to6",
+          "6to10"
+        ],
         "mono_required": true,
-        "exclude_if_had": ["h_gerda"]
-      }
+        "exclude_if_had": [
+          "h_gerda"
+        ]
+      },
+      "_deadline_previous": "2026-05-28",
+      "_deadline_auto_updated": "2026-06-01"
     },
     {
       "id": "msca",
@@ -53,9 +65,19 @@
         "(Global Fellowship) Lettre d'engagement institution tierce"
       ],
       "elig_rules": {
-        "phd": ["yes"],
-        "age": ["lt1","1to2","2to4","4to6","6to10"],
-        "exclude_if_had": ["h_msca"]
+        "phd": [
+          "yes"
+        ],
+        "age": [
+          "lt1",
+          "1to2",
+          "2to4",
+          "4to6",
+          "6to10"
+        ],
+        "exclude_if_had": [
+          "h_msca"
+        ]
       }
     },
     {
@@ -77,9 +99,15 @@
         "Lettre de garantie institutionnelle néerlandaise (embedding guarantee)"
       ],
       "elig_rules": {
-        "phd": ["yes"],
-        "age": ["lt1"],
-        "links_required": ["l_nl"]
+        "phd": [
+          "yes"
+        ],
+        "age": [
+          "lt1"
+        ],
+        "links_required": [
+          "l_nl"
+        ]
       }
     },
     {
@@ -102,8 +130,12 @@
         "Budget détaillé"
       ],
       "elig_rules": {
-        "phd": ["yes"],
-        "links_recommended": ["l_de"]
+        "phd": [
+          "yes"
+        ],
+        "links_recommended": [
+          "l_de"
+        ]
       }
     },
     {
@@ -127,8 +159,12 @@
         "Lettre d'accueil de l'institution étrangère"
       ],
       "elig_rules": {
-        "phd": ["yes"],
-        "links_required": ["l_ch"]
+        "phd": [
+          "yes"
+        ],
+        "links_required": [
+          "l_ch"
+        ]
       }
     },
     {
@@ -141,7 +177,16 @@
       "priority": 1,
       "url": "https://www.wennergren.org/grants/post-phd-research-grants",
       "zones": [],
-      "specs": ["prehist","protohistoire","bioarch","archeo_mort","paleogenom","anthropo","archeo_env","archeo_sci"],
+      "specs": [
+        "prehist",
+        "protohistoire",
+        "bioarch",
+        "archeo_mort",
+        "paleogenom",
+        "anthropo",
+        "archeo_env",
+        "archeo_sci"
+      ],
       "periods": [],
       "note": "Financement de terrain ouvert à toutes nationalités et affiliations (y compris sans poste). Deux sessions/an : 1er mai et 1er novembre. Disciplines : anthropologie, archéologie et domaines connexes.",
       "docs": [
@@ -151,9 +196,19 @@
         "Liste des permis et autorisations requis"
       ],
       "elig_rules": {
-        "phd": ["yes"],
-        "age": ["lt1","1to2","2to4","4to6","6to10"],
-        "exclude_if_had": ["h_wenner"]
+        "phd": [
+          "yes"
+        ],
+        "age": [
+          "lt1",
+          "1to2",
+          "2to4",
+          "4to6",
+          "6to10"
+        ],
+        "exclude_if_had": [
+          "h_wenner"
+        ]
       }
     },
     {
@@ -166,7 +221,15 @@
       "priority": 2,
       "url": "https://www.wennergren.org/grants/hunt-postdoctoral-fellowships",
       "zones": [],
-      "specs": ["prehist","protohistoire","bioarch","archeo_mort","paleogenom","anthropo","archeo_env"],
+      "specs": [
+        "prehist",
+        "protohistoire",
+        "bioarch",
+        "archeo_mort",
+        "paleogenom",
+        "anthropo",
+        "archeo_env"
+      ],
       "periods": [],
       "note": "Pour valoriser des recherches déjà menées en vue de publication. Max. 20 bourses/an. Non renouvelable. Max. 10 ans post-PhD.",
       "docs": [
@@ -176,9 +239,19 @@
         "Lettres de recommandation"
       ],
       "elig_rules": {
-        "phd": ["yes"],
-        "age": ["lt1","1to2","2to4","4to6","6to10"],
-        "exclude_if_had": ["h_wenner"]
+        "phd": [
+          "yes"
+        ],
+        "age": [
+          "lt1",
+          "1to2",
+          "2to4",
+          "4to6",
+          "6to10"
+        ],
+        "exclude_if_had": [
+          "h_wenner"
+        ]
       }
     },
     {
@@ -190,7 +263,11 @@
       "amount": "Salaire JSPS · 12–24 mois au Japon",
       "priority": 3,
       "url": "https://international.cnrs.fr/financements/jsps/",
-      "zones": ["asie_e","asie_se","asie_c"],
+      "zones": [
+        "asie_e",
+        "asie_se",
+        "asie_c"
+      ],
       "specs": [],
       "periods": [],
       "note": "Séjour de recherche dans un laboratoire japonais. Candidature via CNRS (autorité de nomination). Nationalité française ou thèse soutenue en France + 3 ans d'activité en France. PhD < 6 ans.",
@@ -202,9 +279,18 @@
         "Attestation de soutenance de thèse"
       ],
       "elig_rules": {
-        "phd": ["yes"],
-        "age": ["lt1","1to2","2to4","4to6"],
-        "links_required": ["l_jp"]
+        "phd": [
+          "yes"
+        ],
+        "age": [
+          "lt1",
+          "1to2",
+          "2to4",
+          "4to6"
+        ],
+        "links_required": [
+          "l_jp"
+        ]
       }
     },
     {
@@ -226,8 +312,13 @@
         "Lettre de rattachement de l'établissement"
       ],
       "elig_rules": {
-        "phd": ["yes"],
-        "stat": ["funded","mcf"]
+        "phd": [
+          "yes"
+        ],
+        "stat": [
+          "funded",
+          "mcf"
+        ]
       }
     },
     {
@@ -235,7 +326,7 @@
       "name": "Gerda Henkel Stiftung — Research Scholarship (session novembre)",
       "org": "Fondation Gerda Henkel · Allemagne",
       "flag": "🇩🇪",
-      "deadline": "2026-11-30",
+      "deadline": "2026-11-20",
       "amount": "2 760 €/mois · 1 à 24 mois",
       "priority": 1,
       "url": "https://www.gerda-henkel-stiftung.de/en/researchscholarships",
@@ -252,11 +343,23 @@
         "1 lettre de recommandation (uploadée par le référent)"
       ],
       "elig_rules": {
-        "phd": ["yes"],
-        "age": ["lt1","1to2","2to4","4to6","6to10"],
+        "phd": [
+          "yes"
+        ],
+        "age": [
+          "lt1",
+          "1to2",
+          "2to4",
+          "4to6",
+          "6to10"
+        ],
         "mono_required": true,
-        "exclude_if_had": ["h_gerda"]
-      }
+        "exclude_if_had": [
+          "h_gerda"
+        ]
+      },
+      "_deadline_previous": "2026-11-30",
+      "_deadline_auto_updated": "2026-06-01"
     },
     {
       "id": "anr_access",
@@ -280,9 +383,17 @@
         "Stratégie de candidature ERC StG"
       ],
       "elig_rules": {
-        "phd": ["yes"],
-        "age": ["lt1","1to2","2to4"],
-        "exclude_if_had": ["h_anr_access"]
+        "phd": [
+          "yes"
+        ],
+        "age": [
+          "lt1",
+          "1to2",
+          "2to4"
+        ],
+        "exclude_if_had": [
+          "h_anr_access"
+        ]
       }
     },
     {
@@ -306,9 +417,21 @@
         "Lettre du mentor + approbation institutionnelle"
       ],
       "elig_rules": {
-        "phd": ["yes"],
-        "age": ["lt1","1to2","2to4","4to6"],
-        "cty_or_link": { "cty": ["uk"], "link": "l_uk" }
+        "phd": [
+          "yes"
+        ],
+        "age": [
+          "lt1",
+          "1to2",
+          "2to4",
+          "4to6"
+        ],
+        "cty_or_link": {
+          "cty": [
+            "uk"
+          ],
+          "link": "l_uk"
+        }
       }
     },
     {
@@ -332,9 +455,18 @@
         "Approbation de l'institution britannique d'accueil"
       ],
       "elig_rules": {
-        "phd": ["yes"],
-        "age": ["lt1","1to2","2to4","4to6"],
-        "cty_exclude": ["uk"],
+        "phd": [
+          "yes"
+        ],
+        "age": [
+          "lt1",
+          "1to2",
+          "2to4",
+          "4to6"
+        ],
+        "cty_exclude": [
+          "uk"
+        ],
         "link_exclude": "l_uk"
       }
     },
@@ -348,7 +480,15 @@
       "priority": 2,
       "url": "https://www.fondationfyssen.fr/en/study-grants/",
       "zones": [],
-      "specs": ["prehist","protohistoire","bioarch","archeo_mort","anthropo","archeo_env","paleogenom"],
+      "specs": [
+        "prehist",
+        "protohistoire",
+        "bioarch",
+        "archeo_mort",
+        "anthropo",
+        "archeo_env",
+        "paleogenom"
+      ],
       "periods": [],
       "note": "Disciplines cibles : éthologie, psychologie, paléontologie, archéologie, anthropologie sociale, neurobiologie. Mobilité obligatoire : PhD français → labo étranger, ou PhD étranger → labo français. Premier postdoc uniquement ; thèse < 2 ans au 1er septembre.",
       "docs": [
@@ -358,9 +498,15 @@
         "Projet de recherche (max. 8 p., EN)"
       ],
       "elig_rules": {
-        "phd": ["yes"],
-        "age": ["lt1"],
-        "exclude_if_had": ["h_fyssen"]
+        "phd": [
+          "yes"
+        ],
+        "age": [
+          "lt1"
+        ],
+        "exclude_if_had": [
+          "h_fyssen"
+        ]
       }
     },
     {
@@ -372,7 +518,12 @@
       "amount": "Contrat salarié 12 mois · Paris + centres Asie",
       "priority": 1,
       "url": "https://www.efeo.fr/base.php?code=563",
-      "zones": ["asie_se","asie_sud","asie_e","asie_c"],
+      "zones": [
+        "asie_se",
+        "asie_sud",
+        "asie_e",
+        "asie_c"
+      ],
       "specs": [],
       "periods": [],
       "note": "Couvre archéologie, histoire, anthropologie et épigraphie des civilisations de l'Asie du Sud, du Sud-Est et de l'Est. Les projets à dimension interdisciplinaire et ceux collaborant avec des chercheurs de l'EFEO sont prioritaires. Appel 2026 fermé ; prochain appel ~fév. 2027.",
@@ -385,9 +536,21 @@
         "Attestation de soutenance (PhD < 6 ans)"
       ],
       "elig_rules": {
-        "phd": ["yes"],
-        "age": ["lt1","1to2","2to4","4to6"],
-        "zones_any": ["asie_se","asie_sud","asie_e","asie_c"]
+        "phd": [
+          "yes"
+        ],
+        "age": [
+          "lt1",
+          "1to2",
+          "2to4",
+          "4to6"
+        ],
+        "zones_any": [
+          "asie_se",
+          "asie_sud",
+          "asie_e",
+          "asie_c"
+        ]
       }
     },
     {
@@ -399,8 +562,21 @@
       "amount": "2 547 €/mois brut · 24 mois (CDD)",
       "priority": 1,
       "url": "https://www.quaibranly.fr/fr/recherche-scientifique/activites/bourses-et-prix-de-these/bourses-de-recherches-doctorales-et-contrats-postdoctoraux",
-      "zones": ["afrique_ss","afrique_nord","asie_se","asie_sud","asie_e","ameriques","oceanie"],
-      "specs": ["anthropo","histoire_art","archeo_mort","bioarch"],
+      "zones": [
+        "afrique_ss",
+        "afrique_nord",
+        "asie_se",
+        "asie_sud",
+        "asie_e",
+        "ameriques",
+        "oceanie"
+      ],
+      "specs": [
+        "anthropo",
+        "histoire_art",
+        "archeo_mort",
+        "bioarch"
+      ],
       "periods": [],
       "note": "Deux contrats postdoctoraux par an. Domaines : arts, cultures et patrimoines extra-européens. Inclut une mission de terrain d'un mois/an. Le projet doit s'inscrire dans les axes du musée et valoriser ses collections. PhD < 3 ans requis. L'appel 2026 est fermé (12 avr.) ; prochain appel ~mars 2027.",
       "docs": [
@@ -411,10 +587,25 @@
         "Lettres de recommandation"
       ],
       "elig_rules": {
-        "phd": ["yes"],
-        "age": ["lt1","1to2"],
-        "exclude_if_had": ["h_mqb"],
-        "zones_any": ["afrique_ss","afrique_nord","asie_se","asie_sud","asie_e","ameriques","oceanie"]
+        "phd": [
+          "yes"
+        ],
+        "age": [
+          "lt1",
+          "1to2"
+        ],
+        "exclude_if_had": [
+          "h_mqb"
+        ],
+        "zones_any": [
+          "afrique_ss",
+          "afrique_nord",
+          "asie_se",
+          "asie_sud",
+          "asie_e",
+          "ameriques",
+          "oceanie"
+        ]
       }
     },
     {
@@ -426,9 +617,25 @@
       "amount": "~1 700 €/mois + logement · 6 à 12 mois",
       "priority": 2,
       "url": "https://www.ifao.egnet.net/recherche/recherche-soutien/bourses-doctorales-et-post-doctorales/",
-      "zones": ["afrique_nord","med"],
-      "specs": ["antiquite","prehist","medieval","archeo_sci","numismat"],
-      "periods": ["paleolith","neolith","age_bronze","age_fer","antiquite_p","medieval_p"],
+      "zones": [
+        "afrique_nord",
+        "med"
+      ],
+      "specs": [
+        "antiquite",
+        "prehist",
+        "medieval",
+        "archeo_sci",
+        "numismat"
+      ],
+      "periods": [
+        "paleolith",
+        "neolith",
+        "age_bronze",
+        "age_fer",
+        "antiquite_p",
+        "medieval_p"
+      ],
       "note": "Bourses postdoctorales pour séjours de recherche en Égypte (et Nubie/Soudan). Disciplines : archéologie, philologie, histoire, histoire de l'art. Champ chronologique : de la Préhistoire au milieu du XXe siècle. Plusieurs appels par an.",
       "docs": [
         "Formulaire IFAO (ifao.egnet.net)",
@@ -438,8 +645,13 @@
         "Attestation d'inscription ou de soutenance"
       ],
       "elig_rules": {
-        "phd": ["yes"],
-        "zones_any": ["afrique_nord","med"]
+        "phd": [
+          "yes"
+        ],
+        "zones_any": [
+          "afrique_nord",
+          "med"
+        ]
       }
     },
     {
@@ -463,9 +675,18 @@
         "Lettre de mentor autrichien"
       ],
       "elig_rules": {
-        "phd": ["yes"],
-        "age": ["lt1","1to2","2to4","4to6"],
-        "links_required": ["l_at"]
+        "phd": [
+          "yes"
+        ],
+        "age": [
+          "lt1",
+          "1to2",
+          "2to4",
+          "4to6"
+        ],
+        "links_required": [
+          "l_at"
+        ]
       }
     }
   ]
