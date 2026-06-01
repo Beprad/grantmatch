@@ -232,6 +232,27 @@ JOB_FEEDS = [
         "label":   "DAI – Deutsches Archäologisches Institut",
         "country": "de", "flag": "🇩🇪",
     },
+    # ── Archéologie — agrégateurs spécialisés ──
+    {
+        "url":     "https://archpostgrad.wordpress.com/tag/postdoc/feed/",
+        "label":   "ArchPostgrad – Postdoc archaeology (international)",
+        "country": "other_eu", "flag": "🌍",
+    },
+    {
+        "url":     "https://archpostgrad.wordpress.com/feed/",
+        "label":   "ArchPostgrad – Toutes offres archaeology",
+        "country": "other_eu", "flag": "🌍",
+    },
+    {
+        "url":     "https://www.myscience.org/jobs/rss?discipline=archaeology&type=postdoc",
+        "label":   "MyScience.org – Archaeology postdoc",
+        "country": "other_eu", "flag": "🇪🇺",
+    },
+    {
+        "url":     "https://www.myscience.org/jobs/rss?discipline=archaeology&type=research",
+        "label":   "MyScience.org – Archaeology research",
+        "country": "other_eu", "flag": "🇪🇺",
+    },
 ]
 
 # ─────────────────────────────────────────────
@@ -285,7 +306,7 @@ USAJOBS_QUERIES = [
 def make_id(text):
     return hashlib.md5(text.encode()).hexdigest()[:10]
 
-def is_relevant(title, summary="", is_job_feed=False):
+def is_relevant(title, summary="", is_job_feed=False, strict_discipline=False):
     text = (title + " " + summary).lower()
     for kw in KW_EXCLUDE:
         if kw.lower() in text:
@@ -293,6 +314,11 @@ def is_relevant(title, summary="", is_job_feed=False):
     has_disc = any(kw.lower() in text for kw in KW_DISCIPLINE)
     if not has_disc:
         return False
+    # Mode strict : le mot-clé discipline doit être dans le TITRE (pas seulement le résumé)
+    if strict_discipline:
+        title_lower = title.lower() if title else text[:200].lower()
+        if not any(kw.lower() in title_lower for kw in KW_DISCIPLINE):
+            return False
     if is_job_feed:
         # Pour les flux emploi, on accepte aussi les postes permanents
         has_grant = any(kw.lower() in text for kw in KW_GRANT)
@@ -354,7 +380,7 @@ def save_discovered(data):
 # SCRAPERS
 # ─────────────────────────────────────────────
 
-def scrape_rss(feed_config, existing_ids, is_job_feed=False):
+def scrape_rss(feed_config, existing_ids, is_job_feed=False, strict_discipline=False):
     results = []
     try:
         feed = feedparser.parse(feed_config["url"])
@@ -364,7 +390,7 @@ def scrape_rss(feed_config, existing_ids, is_job_feed=False):
             link      = entry.get("link","")
             published = entry.get("published","") or entry.get("updated","")
 
-            if not is_relevant(title, summary, is_job_feed=is_job_feed):
+            if not is_relevant(title, summary, is_job_feed=is_job_feed, strict_discipline=strict_discipline):
                 continue
 
             pub_date = None
@@ -414,38 +440,7 @@ def scrape_rss(feed_config, existing_ids, is_job_feed=False):
 
 
 def scrape_academic_positions(existing_ids):
-    results = []
-    url = "https://academicpositions.eu/jobs/archaeology"
-    try:
-        r = requests.get(url, headers=HEADERS, timeout=15)
-        r.raise_for_status()
-        clean = re.sub(r"<[^>]+"," ", r.text)
-        clean = re.sub(r"\s+"," ", clean)
-        blocks = re.findall(
-            r"((?:postdoc|fellowship|research\s+fellow|research\s+associate)[^.]{20,300})",
-            clean, re.IGNORECASE
-        )
-        for block in blocks[:20]:
-            if not any(kw.lower() in block.lower() for kw in KW_DISCIPLINE):
-                continue
-            item_id = make_id(block[:60])
-            if item_id in existing_ids:
-                continue
-            text = block
-            results.append({
-                "id": item_id, "type":"postdoc",
-                "source":"AcademicPositions.eu", "country":"other_eu", "flag":"🇪🇺",
-                "title": block[:120].strip(), "url": url,
-                "published": TODAY.isoformat(),
-                "deadline":  extract_deadline(text),
-                "summary":   block[:400].strip(),
-                "zones":     detect_zones(text),
-                "specs":     detect_specs(text),
-                "auto":True, "validated":True, "active":True,
-            })
-    except Exception as e:
-        print(f"  ⚠ AcademicPositions: {e}", file=sys.stderr)
-    return results
+    return []  # Désactivé — site bloque les bots
 
 
 def scrape_usajobs(existing_ids):
@@ -559,7 +554,7 @@ def main():
     # 1. Calenda (bourses + emploi)
     print("\n📡 Calenda…")
     for feed in CALENDA_FEEDS:
-        items = scrape_rss(feed, existing_ids, is_job_feed=True)
+        items = scrape_rss(feed, existing_ids, is_job_feed=True, strict_discipline=True)
         for i in items:
             new_items.append(i); existing_ids.add(i["id"])
         if items: print(f"  ✓ {feed['label']}: {len(items)} nouvelles")
@@ -573,12 +568,12 @@ def main():
             new_items.append(i); existing_ids.add(i["id"])
         if items: print(f"     ✓ {len(items)} nouvelles")
 
-    # 3. AcademicPositions.eu
-    print("\n🌐 AcademicPositions.eu…")
-    items = scrape_academic_positions(existing_ids)
-    for i in items:
-        new_items.append(i); existing_ids.add(i["id"])
-    print(f"  {len(items)} nouvelles")
+    # 3. AcademicPositions.eu — désactivé (bot detection)
+    # Remplacé par ArchPostgrad et MyScience dans JOB_FEEDS
+
+
+
+
 
     # 4. USAJobs
     print("\n🇺🇸 USAJobs API…")
