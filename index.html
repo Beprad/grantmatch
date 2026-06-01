@@ -181,6 +181,7 @@ h1 em{font-style:italic;color:var(--gold)}
   <p class="updated" id="updatedLine"></p>
 </header>
 
+<div id="appSection" style="display:none">
 <!-- TABS -->
 <div class="tabs">
   <button class="tab active" onclick="switchTab('grants',this)">Bourses & Appels <span class="tab-badge" id="badge-grants">—</span></button>
@@ -192,6 +193,7 @@ h1 em{font-style:italic;color:var(--gold)}
 ═══════════════════════════════════ -->
 <div class="panel active" id="panel-grants">
 
+<div id="wizardSection">
 <div class="progress-bar"><div class="progress-fill" id="pf" style="width:0%"></div></div>
 
 <div id="wizard">
@@ -335,10 +337,15 @@ h1 em{font-style:italic;color:var(--gold)}
 </div>
 
 </div><!-- /wizard -->
+</div><!-- /wizardSection -->
 
 <!-- RESULTS -->
 <div id="results" style="display:none">
-  <div class="rh"><div class="rt" id="rTitle"></div><div class="rc" id="rCount"></div></div>
+  <div class="rh">
+    <div class="rt" id="rTitle"></div>
+    <div class="rc" id="rCount"></div>
+    <button class="btn btn-gh" onclick="restart()" style="margin-top:12px;font-size:.75rem;padding:7px 16px">✏️ Modifier mon profil</button>
+  </div>
   <div id="mcfBox" style="display:none;margin-bottom:20px;padding:16px 20px;background:white;border:1.5px solid var(--border);border-radius:10px;border-left:4px solid var(--slate)">
     <div style="font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--slate);margin-bottom:10px">🎓 Postes permanents — liens directs</div>
     <div style="font-size:.78rem;color:var(--slate);line-height:1.8">
@@ -452,6 +459,8 @@ h1 em{font-style:italic;color:var(--gold)}
 
 </div><!-- /panel-jobs -->
 
+</div><!-- /appSection -->
+
 </div><!-- /main -->
 </div><!-- /app -->
 
@@ -544,6 +553,7 @@ function switchTab(name,btn){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('panel-'+name).classList.add('active');
+  if(name==='jobs') renderJobs('all');
 }
 
 // ═══ WIZARD ═══
@@ -617,7 +627,8 @@ function go(){
     return true;
   });
 
-  document.getElementById('wizard').style.display='none';
+  document.getElementById('wizardSection').style.display='none';
+  document.getElementById('appSection').style.display='block';
   document.getElementById('results').style.display='block';
   document.getElementById('pf').style.width='100%';
   window.scrollTo({top:0,behavior:'smooth'});
@@ -749,7 +760,8 @@ function restart(){
   document.querySelectorAll('input[type=radio]').forEach(i=>i.checked=false);
   document.querySelectorAll('.ci').forEach(i=>i.classList.remove('on'));
   document.querySelectorAll('.tag-opt').forEach(t=>t.classList.remove('sel'));
-  document.getElementById('wizard').style.display='block';
+  document.getElementById('wizardSection').style.display='block';
+  document.getElementById('appSection').style.display='none';
   document.getElementById('results').style.display='none';
   document.getElementById('mcfBox').style.display='none';
   document.getElementById('jobProfileNote').style.display='none';
