@@ -182,18 +182,7 @@ h1 em{font-style:italic;color:var(--gold)}
   <p class="updated" id="updatedLine"></p>
 </header>
 
-<!-- TABS -->
-<div id="tabsBar">
-<div class="tabs">
-  <button class="tab active" onclick="switchTab('grants',this)">Bourses & Appels <span class="tab-badge" id="badge-grants">—</span></button>
-  <button class="tab" onclick="switchTab('jobs',this)">Offres Postdoc <span class="tab-badge" id="badge-jobs">—</span></button>
-</div>
-
-<!-- ═══════════════════════════════════
-     PANEL 1 — BOURSES
-═══════════════════════════════════ -->
-<div class="panel active" id="panel-grants">
-
+<div id="wizardSection">
 <div class="progress-bar"><div class="progress-fill" id="pf" style="width:0%"></div></div>
 
 <div id="wizard">
@@ -337,6 +326,19 @@ h1 em{font-style:italic;color:var(--gold)}
 </div>
 
 </div><!-- /wizard -->
+</div><!-- /wizardSection -->
+
+<!-- TABS -->
+<div id="tabsBar">
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('grants',this)">Bourses & Appels <span class="tab-badge" id="badge-grants">—</span></button>
+  <button class="tab" onclick="switchTab('jobs',this)">Offres Postdoc <span class="tab-badge" id="badge-jobs">—</span></button>
+</div>
+
+<!-- ═══════════════════════════════════
+     PANEL 1 — BOURSES
+═══════════════════════════════════ -->
+<div class="panel active" id="panel-grants">
 
 <!-- RESULTS -->
 <div id="results" style="display:none">
@@ -624,7 +626,7 @@ function go(){
     return true;
   });
 
-  document.getElementById('wizard').style.display='none';
+  document.getElementById('wizardSection').style.display='none';
   document.getElementById('tabsBar').style.display='block';
   document.getElementById('results').style.display='block';
   document.getElementById('pf').style.width='100%';
@@ -758,7 +760,7 @@ function restart(){
   document.querySelectorAll('input[type=radio]').forEach(i=>i.checked=false);
   document.querySelectorAll('.ci').forEach(i=>i.classList.remove('on'));
   document.querySelectorAll('.tag-opt').forEach(t=>t.classList.remove('sel'));
-  document.getElementById('wizard').style.display='block';
+  document.getElementById('wizardSection').style.display='block';
   document.getElementById('tabsBar').style.display='none';
   document.getElementById('results').style.display='none';
   document.getElementById('mcfBox').style.display='none';
