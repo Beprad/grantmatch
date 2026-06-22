@@ -1,7 +1,7 @@
 {
-  "last_updated": "2026-06-15",
-  "last_checked": "2026-06-15",
-  "new_this_run": 0,
+  "last_updated": "2026-06-22",
+  "last_checked": "2026-06-22",
+  "new_this_run": 1,
   "items": [
     {
       "id": "156923a0e2",
@@ -16,28 +16,6 @@
       "summary": "The International Excellence in the Humanities Fellowship Programme promotes academic diversity and interdisciplinarity and welcomes researchers with an international background to apply for post- doctoral fellowships at the MaCI. The Maison de la Création et de l’Innovation (MaCI), UGA’s International Center for the Humanities, is launching its annual Research Fellowship Programme. We offer 6 res",
       "zones": [],
       "specs": [],
-      "auto": true,
-      "validated": true,
-      "active": true
-    },
-    {
-      "id": "b55270131d",
-      "type": "postdoc",
-      "source": "Calenda – Archéologie",
-      "country": "france",
-      "flag": "🇫🇷",
-      "title": "Première conférence de la communauté de recherche en archéologie biomoléculaire et isotopique",
-      "url": "https://calenda.org/1376627",
-      "published": "2026-03-20",
-      "deadline": null,
-      "summary": "Depuis une dizaine d’années, le domaine des sciences archéologiques biomoléculaires connaît un essor remarquable, se traduisant par une diversification des approches (ADN ancien, biogéochimie isotopique, résidus organiques, paléoprotéomique, paléométabolomique, spectroscopie infra-rouge) et une multiplication des champs d’application — humains, animaux, végétaux, pathogènes ou encore sédiments.  F",
-      "zones": [
-        "france"
-      ],
-      "specs": [
-        "paleogenom",
-        "archeo_sci"
-      ],
       "auto": true,
       "validated": true,
       "active": true
@@ -73,6 +51,26 @@
       "deadline": null,
       "summary": "Afin d’encourager les jeunes chercheurs et les étudiants inscrits en doctorat à valoriser leurs travaux de recherche en sciences humaines et sociales ou en santé publique sur la maladie d’Alzheimer, la Fondation Médéric Alzheimer apporte son soutien à la participation à une communication scientifique via un appel à candidatures.",
       "zones": [],
+      "specs": [],
+      "auto": true,
+      "validated": true,
+      "active": true
+    },
+    {
+      "id": "4c4827e129",
+      "type": "postdoc",
+      "source": "THE Jobs – Archaeology postdoc",
+      "country": "uk",
+      "flag": "🇬🇧",
+      "title": "FLINDERS UNIVERSITY: ARC Postdoctoral Research Fellow in Archaeology",
+      "url": "https://www.timeshighereducation.com/unijobs/listing/412450/arc-postdoctoral-research-fellow-in-archaeology/?TrackID=8&utm_source=rss&utm_medium=feed&utm_campaign=general",
+      "published": "2026-06-22",
+      "deadline": null,
+      "summary": "AU$115,871 - $137,122pa | 17% superannuation:\n\nFLINDERS UNIVERSITY:\nFlinders University is seeking a motivated Postdoctoral Research Fellow in Archaeology to join the ARC Industrial Transformation ...\nAdelaide, Australia",
+      "zones": [
+        "asie_sud",
+        "oceanie"
+      ],
       "specs": [],
       "auto": true,
       "validated": true,
