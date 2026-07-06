@@ -1,7 +1,7 @@
 {
-  "last_updated": "2026-06-29",
-  "last_checked": "2026-06-29",
-  "new_this_run": 0,
+  "last_updated": "2026-07-06",
+  "last_checked": "2026-07-06",
+  "new_this_run": 1,
   "items": [
     {
       "id": "156923a0e2",
@@ -72,6 +72,25 @@
         "oceanie"
       ],
       "specs": [],
+      "auto": true,
+      "validated": true,
+      "active": true
+    },
+    {
+      "id": "c8fc6f0676",
+      "type": "postdoc",
+      "source": "Calenda – Amériques",
+      "country": "france",
+      "flag": "🇫🇷",
+      "title": "Heritage-Sensitive policies in the Andes, Chaco and Amazonia spiritual landscapes",
+      "url": "https://calenda.org/1419015",
+      "published": "2026-07-03",
+      "deadline": null,
+      "summary": "This dialogue explores the implementation of the Convention on Biological Diversity (CBD) through Other Effective Area-Based Conservation Measures (OECMs), focusing on the recognition of Indigenous and Community Conserved Areas (ICCAs) and Indigenous Territories of Life (ITTs). It examines the legal, political, and institutional challenges that continue to shape the recognition of Indigenous Peopl",
+      "zones": [],
+      "specs": [
+        "archeo_env"
+      ],
       "auto": true,
       "validated": true,
       "active": true
