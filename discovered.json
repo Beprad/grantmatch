@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-09-07",
-  "last_checked": "2026-09-07",
+  "last_updated": "2026-09-14",
+  "last_checked": "2026-09-14",
   "new_this_run": 1,
   "items": [
     {
@@ -77,6 +77,25 @@
       ],
       "specs": [
         "anthropo"
+      ],
+      "auto": true,
+      "validated": true,
+      "active": true
+    },
+    {
+      "id": "48ff59e1f7",
+      "type": "postdoc",
+      "source": "THE Jobs – Archaeology postdoc",
+      "country": "uk",
+      "flag": "🇬🇧",
+      "title": "UNIVERSITY OF VIENNA: University Assistant Postdoctoral, Historical and Cultural Studies",
+      "url": "https://www.timeshighereducation.com/unijobs/listing/415507/university-assistant-postdoctoral-historical-and-cultural-studies/?TrackID=8&utm_source=rss&utm_medium=feed&utm_campaign=general",
+      "published": "2026-09-14",
+      "deadline": null,
+      "summary": "The monthly gross salary is 5079,50 € (14x/year):\n\nUNIVERSITY OF VIENNA:\nThe Department of Prehistory and Historical Archaeology is advertising a full-time position (University assistant postdoctoral ...\nVienna (Landbezirke) (AT)",
+      "zones": [],
+      "specs": [
+        "prehist"
       ],
       "auto": true,
       "validated": true,
