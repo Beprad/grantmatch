@@ -1,27 +1,8 @@
 {
-  "last_updated": "2026-09-28",
-  "last_checked": "2026-09-28",
-  "new_this_run": 0,
+  "last_updated": "2026-10-05",
+  "last_checked": "2026-10-05",
+  "new_this_run": 1,
   "items": [
-    {
-      "id": "c8fc6f0676",
-      "type": "postdoc",
-      "source": "Calenda – Amériques",
-      "country": "france",
-      "flag": "🇫🇷",
-      "title": "Heritage-Sensitive policies in the Andes, Chaco and Amazonia spiritual landscapes",
-      "url": "https://calenda.org/1419015",
-      "published": "2026-07-03",
-      "deadline": null,
-      "summary": "This dialogue explores the implementation of the Convention on Biological Diversity (CBD) through Other Effective Area-Based Conservation Measures (OECMs), focusing on the recognition of Indigenous and Community Conserved Areas (ICCAs) and Indigenous Territories of Life (ITTs). It examines the legal, political, and institutional challenges that continue to shape the recognition of Indigenous Peopl",
-      "zones": [],
-      "specs": [
-        "archeo_env"
-      ],
-      "auto": true,
-      "validated": true,
-      "active": true
-    },
     {
       "id": "6bb5d4df33",
       "type": "mcf",
@@ -74,6 +55,28 @@
       "deadline": null,
       "summary": "The monthly gross salary is 5079,50 € (14x/year):\n\nUNIVERSITY OF VIENNA:\nThe Department of Prehistory and Historical Archaeology is advertising a full-time position (University assistant postdoctoral ...\nVienna (Landbezirke) (AT)",
       "zones": [],
+      "specs": [
+        "prehist"
+      ],
+      "auto": true,
+      "validated": true,
+      "active": true
+    },
+    {
+      "id": "64cc41a4a7",
+      "type": "postdoc",
+      "source": "THE Jobs – Archaeology postdoc",
+      "country": "uk",
+      "flag": "🇬🇧",
+      "title": "KIEL UNIVERSITY: W1 - Professorship (with Tenure Track to W 2) in Prehistoric and Protohistoric Archaeology",
+      "url": "https://www.timeshighereducation.com/unijobs/listing/416129/w1-professorship-with-tenure-track-to-w-2-in-prehistoric-and-protohistoric-archaeology/?TrackID=8&utm_source=rss&utm_medium=feed&utm_campaign=general",
+      "published": "2026-10-01",
+      "deadline": null,
+      "summary": "KIEL UNIVERSITY:\nThe future junior professor is expected to develop and pursue independent, internationally recognised research in the field ...\nKiel, Germany",
+      "zones": [
+        "europe_occ",
+        "asie_sud"
+      ],
       "specs": [
         "prehist"
       ],
