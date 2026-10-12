@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-10-05",
-  "last_checked": "2026-10-05",
+  "last_updated": "2026-10-12",
+  "last_checked": "2026-10-12",
   "new_this_run": 1,
   "items": [
     {
@@ -79,6 +79,27 @@
       ],
       "specs": [
         "prehist"
+      ],
+      "auto": true,
+      "validated": true,
+      "active": true
+    },
+    {
+      "id": "62abf14398",
+      "type": "postdoc",
+      "source": "Calenda – Préhistoire & Antiquité",
+      "country": "france",
+      "flag": "🇫🇷",
+      "title": "Women in the Archaeology of Greece",
+      "url": "https://calenda.org/1436852",
+      "published": "2026-10-07",
+      "deadline": null,
+      "summary": "This workshop seeks to reassess the largely overlooked history and contributions of women travellers in the ancient Greek world during the 18th and 19th centuries. While scholarship has traditionally focused either on male travellers or on women travelling to more distant and “exotic” regions, women’s experiences and intellectual contributions in Greece have received comparatively little attention",
+      "zones": [
+        "europe_orient"
+      ],
+      "specs": [
+        "antiquite"
       ],
       "auto": true,
       "validated": true,
