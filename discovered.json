@@ -1,7 +1,7 @@
 {
-  "last_updated": "2026-10-19",
-  "last_checked": "2026-10-19",
-  "new_this_run": 0,
+  "last_updated": "2026-10-26",
+  "last_checked": "2026-10-26",
+  "new_this_run": 1,
   "items": [
     {
       "id": "6bb5d4df33",
@@ -100,6 +100,28 @@
       ],
       "specs": [
         "antiquite"
+      ],
+      "auto": true,
+      "validated": true,
+      "active": true
+    },
+    {
+      "id": "563da9877a",
+      "type": "postdoc",
+      "source": "THE Jobs – Archaeology postdoc",
+      "country": "uk",
+      "flag": "🇬🇧",
+      "title": "LUDWIG MAXIMILIANS UNIVERSITAET MUENCHEN: Professorship (W2) of Classical Archaeology (6 Years/Tenure Track)",
+      "url": "https://www.timeshighereducation.com/unijobs/listing/416816/professorship-w2-of-classical-archaeology-6-years-tenure-track-/?TrackID=8&utm_source=rss&utm_medium=feed&utm_campaign=general",
+      "published": "2026-10-21",
+      "deadline": null,
+      "summary": "W2:\n\nLUDWIG MAXIMILIANS UNIVERSITAET MUENCHEN:\nProfessorship in classical archaeology exploring Greek and Roman visual cultures, image anthropology, media and curatorial practice.\nMunich (City), Bavaria (State), Germany",
+      "zones": [
+        "europe_occ"
+      ],
+      "specs": [
+        "antiquite",
+        "anthropo"
       ],
       "auto": true,
       "validated": true,
