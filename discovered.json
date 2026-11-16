@@ -1,7 +1,7 @@
 {
-  "last_updated": "2026-11-02",
-  "last_checked": "2026-11-02",
-  "new_this_run": 0,
+  "last_updated": "2026-11-16",
+  "last_checked": "2026-11-16",
+  "new_this_run": 4,
   "items": [
     {
       "id": "527ab08e7e",
@@ -104,6 +104,87 @@
         "antiquite",
         "anthropo"
       ],
+      "auto": true,
+      "validated": true,
+      "active": true
+    },
+    {
+      "id": "0b557f015a",
+      "type": "mcf",
+      "source": "THE Jobs – Archaeology postdoc",
+      "country": "uk",
+      "flag": "🇬🇧",
+      "title": "FLINDERS UNIVERSITY: Lecturer in Maritime Archaeology",
+      "url": "https://www.timeshighereducation.com/unijobs/listing/417480/lecturer-in-maritime-archaeology/?TrackID=8&utm_source=rss&utm_medium=feed&utm_campaign=general",
+      "published": "2026-11-09",
+      "deadline": null,
+      "summary": "$115,871 - $137,122 pa:\n\nFLINDERS UNIVERSITY:\nThis exciting opportunity will see you contribute to the advancement of Archaeology through high-quality teaching, innovative ...\nAdelaide, Australia",
+      "zones": [
+        "asie_sud",
+        "oceanie"
+      ],
+      "specs": [],
+      "auto": true,
+      "validated": true,
+      "active": true
+    },
+    {
+      "id": "145443107a",
+      "type": "mcf",
+      "source": "THE Jobs – Archaeology postdoc",
+      "country": "uk",
+      "flag": "🇬🇧",
+      "title": "AMERICAN UNIVERSITY OF SHARJAH: Assistant Professor of Anthropology: Critical Heritage and Museum Studies",
+      "url": "https://www.timeshighereducation.com/unijobs/listing/417096/assistant-professor-of-anthropology-critical-heritage-and-museum-studies/?TrackID=8&utm_source=rss&utm_medium=feed&utm_campaign=general",
+      "published": "2026-10-29",
+      "deadline": null,
+      "summary": "AMERICAN UNIVERSITY OF SHARJAH:\nThe Department of International Studies at American University of Sharjah (AUS) seeks an anthropologist whose research and ...\nSharjah (Emirate) (AE)",
+      "zones": [
+        "ameriques"
+      ],
+      "specs": [
+        "anthropo"
+      ],
+      "auto": true,
+      "validated": true,
+      "active": true
+    },
+    {
+      "id": "f335ba735c",
+      "type": "mcf",
+      "source": "THE Jobs – Archaeology postdoc",
+      "country": "uk",
+      "flag": "🇬🇧",
+      "title": "FLINDERS UNIVERSITY: Lecturer / Senior Lecturer in Archaeology",
+      "url": "https://www.timeshighereducation.com/unijobs/listing/417657/lecturer-senior-lecturer-in-archaeology/?TrackID=8&utm_source=rss&utm_medium=feed&utm_campaign=general",
+      "published": "2026-11-13",
+      "deadline": null,
+      "summary": "$115,871 - $162,619 p.a.:\n\nFLINDERS UNIVERSITY:\nAs a Lecturer in Archaeology, you will contribute to Flinders University's teaching and research excellence through the delivery ...\nAdelaide, Australia",
+      "zones": [
+        "asie_sud",
+        "oceanie"
+      ],
+      "specs": [],
+      "auto": true,
+      "validated": true,
+      "active": true
+    },
+    {
+      "id": "64111041cb",
+      "type": "mcf",
+      "source": "THE Jobs – Archaeology postdoc",
+      "country": "uk",
+      "flag": "🇬🇧",
+      "title": "FLINDERS UNIVERSITY: Lecturer in Maritime Archaeology (Through the Reeds Project)",
+      "url": "https://www.timeshighereducation.com/unijobs/listing/417637/lecturer-in-maritime-archaeology-through-the-reeds-project-/?TrackID=8&utm_source=rss&utm_medium=feed&utm_campaign=general",
+      "published": "2026-11-13",
+      "deadline": null,
+      "summary": "$115,871 - $137,122 pa:\n\nFLINDERS UNIVERSITY:\nAs a Lecturer in Maritime Archaeology, you will contribute to Flinders University’s teaching and research excellence through the delivery ...\nAdelaide, Australia",
+      "zones": [
+        "asie_sud",
+        "oceanie"
+      ],
+      "specs": [],
       "auto": true,
       "validated": true,
       "active": true
