@@ -1,7 +1,7 @@
 {
-  "last_updated": "2026-11-16",
-  "last_checked": "2026-11-16",
-  "new_this_run": 4,
+  "last_updated": "2026-11-23",
+  "last_checked": "2026-11-23",
+  "new_this_run": 1,
   "items": [
     {
       "id": "527ab08e7e",
@@ -184,6 +184,23 @@
         "asie_sud",
         "oceanie"
       ],
+      "specs": [],
+      "auto": true,
+      "validated": true,
+      "active": true
+    },
+    {
+      "id": "ec5be72ee9",
+      "type": "postdoc",
+      "source": "THE Jobs – Archaeology postdoc",
+      "country": "uk",
+      "flag": "🇬🇧",
+      "title": "UNIVERSITY OF VIENNA: Tenure Track Professorship in Archaeology of the first millennium CE",
+      "url": "https://www.timeshighereducation.com/unijobs/listing/417887/tenure-track-professorship-in-archaeology-of-the-first-millennium-ce/?TrackID=8&utm_source=rss&utm_medium=feed&utm_campaign=general",
+      "published": "2026-11-20",
+      "deadline": null,
+      "summary": "UNIVERSITY OF VIENNA:\nWe are seeking to appoint an outstanding scholar to advance and help shape the full scope of the interdisciplinary field of early historical ...\nVienna (Landbezirke) (AT)",
+      "zones": [],
       "specs": [],
       "auto": true,
       "validated": true,
